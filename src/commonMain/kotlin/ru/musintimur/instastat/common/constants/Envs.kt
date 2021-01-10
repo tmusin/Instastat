@@ -1,0 +1,8 @@
+package ru.musintimur.instastat.common.constants
+
+const val ENV_INSTASTAT_STATIC_FOLDER = "INSTASTAT_STATIC_FOLDER"
+const val ENV_INSTASTAT_DB_CATALOG = "INSTASTAT_DB_CATALOG"
+const val ENV_FIREFOX_BIN_PATH = "FIREFOX_BIN_PATH"
+const val ENV_GECKO_BIN_PATH = "GECKO_BIN_PATH"
+const val ENV_LOGGING = "LOGGING"
+const val ENV_ERROR_LOGGING = "ERROR_LOGGING"

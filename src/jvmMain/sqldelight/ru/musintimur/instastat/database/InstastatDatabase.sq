@@ -1,0 +1,89 @@
+CREATE TABLE IF NOT EXISTS profiles (
+	profile_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	profile_name TEXT NOT NULL,
+	is_active INTEGER AS Boolean NOT NULL DEFAULT 1
+);
+CREATE INDEX IF NOT EXISTS profiles_profile_name_id_idx ON profiles(profile_name);
+
+CREATE TABLE IF NOT EXISTS profiles_history (
+	profiles_history_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	profile_id INTEGER NOT NULL,
+	metering_date TEXT NOT NULL,
+	count_posts INTEGER NOT NULL DEFAULT 0,
+	count_followers INTEGER NOT NULL DEFAULT 0,
+	count_followings INTEGER NOT NULL DEFAULT 0,
+	CONSTRAINT profiles_history_fk FOREIGN KEY (profile_id) REFERENCES profiles(profile_id) ON UPDATE RESTRICT ON DELETE RESTRICT
+);
+CREATE INDEX IF NOT EXISTS profiles_history_profile_id_idx ON profiles_history(profile_id);
+
+getAllProfiles:
+SELECT * FROM profiles;
+
+getAllActiveProfiles:
+SELECT * FROM profiles
+    WHERE is_active = 1;
+
+getAllActiveProfilesForUpdate:
+SELECT p.* FROM profiles p
+WHERE is_active = 1
+AND NOT EXISTS (
+    SELECT ph.profiles_history_id
+    FROM profiles_history ph
+    WHERE ph.profile_id = p.profile_id
+    AND date(metering_date) = DATE('now', 'localtime')
+);
+
+getProfileByName:
+SELECT p.* FROM profiles p
+WHERE p.profile_name = :profileName;
+
+getLastMeasure:
+SELECT MAX(date(metering_date)) result
+    FROM profiles_history;
+
+insertNewStatistics:
+INSERT INTO profiles_history(profile_id, metering_date, count_posts, count_followers, count_followings)
+    VALUES (:profile_id, DATETIME('now', 'localtime'), :count_posts, : count_followers, :count_followings);
+
+compareDates:
+SELECT p.profile_name,
+    ph1.count_posts cp1, ph2.count_posts cp2,
+    ph1.count_followers cfl1, ph2.count_followers cfl2,
+    ph1.count_followings cfg1, ph2.count_followings cfg2
+FROM profiles p
+    INNER JOIN profiles_history ph1 ON p.profile_id=ph1.profile_id
+    INNER JOIN profiles_history ph2 ON p.profile_id=ph2.profile_id
+WHERE date(ph1.metering_date) = :date1
+    AND date(ph2.metering_date) = :date2
+ORDER BY p.profile_name;
+
+getDateOrBefore:
+SELECT MAX(date(metering_date)) result
+    FROM profiles_history
+WHERE date(metering_date) <= :date;
+
+getDateBefore:
+SELECT MAX(date(metering_date)) result
+    FROM profiles_history
+WHERE date(metering_date) < :date;
+
+getProfileHistoryPosts:
+SELECT date(ph.metering_date) metering_date, ph.count_posts
+FROM profiles_history ph
+WHERE ph.profile_id = :profileId
+ORDER BY ph.metering_date
+LIMIT 30;
+
+getProfileHistoryFollowers:
+SELECT date(ph.metering_date) metering_date, ph.count_followers
+FROM profiles_history ph
+WHERE ph.profile_id = :profileId
+ORDER BY ph.metering_date
+LIMIT 30;
+
+getProfileHistoryFollowings:
+SELECT date(ph.metering_date) metering_date, ph.count_followings
+FROM profiles_history ph
+WHERE ph.profile_id = :profileId
+ORDER BY ph.metering_date
+LIMIT 30;
