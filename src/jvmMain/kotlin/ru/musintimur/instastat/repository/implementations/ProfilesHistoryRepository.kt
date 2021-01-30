@@ -19,24 +19,8 @@ class ProfilesHistoryRepository(private val queries: InstastatDatabaseQueries) :
         queries.insertNewStatistics(profile.profileId, statistics.posts, statistics.followers, statistics.followings)
     }
 
-    override suspend fun getPostsHistory(dt1: LocalDate, dt2: LocalDate?): List<PeriodReportRecord> {
-
-        val date1: LocalDate = runCatching {
-            queries.getDateOrBefore(dt1.toSqlLiteText())
-                .executeAsOne().result?.asSqlLiteDate() ?: return emptyList()
-        }.getOrThrow()
-
-        val dates: Pair<LocalDate, LocalDate> = when {
-            dt2 == null || date1 == dt2 -> {
-                runCatching {
-                    queries.getDateBefore(dt1.toSqlLiteText()).executeAsOne().result?.asSqlLiteDate()
-                }.getOrNull()?.let { Pair(date1, it) } ?: return emptyList()
-            }
-            dt1 > dt2 -> Pair(dt1, dt2)
-            else -> Pair(dt2, dt1)
-        }
-
-        return queries.compareDates(dates.first.toSqlLiteText(), dates.second.toSqlLiteText()).executeAsList()
+    override suspend fun getPostsHistory(dt1: LocalDate): List<PeriodReportRecord> =
+        queries.compareDates(dt1.toSqlLiteText()).executeAsList()
             .map {
                 PeriodReportRecord(
                     it.profile_name,
@@ -48,7 +32,6 @@ class ProfilesHistoryRepository(private val queries: InstastatDatabaseQueries) :
                     it.cfg1 - it.cfg2
                 )
             }
-    }
 
     override suspend fun getProfileHistoryPosts(profile: Profile): List<DayCount> =
         queries.getProfileHistoryPosts(profile.profileId).executeAsList().map{

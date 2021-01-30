@@ -53,37 +53,41 @@ SELECT p.profile_name,
 FROM profiles p
     INNER JOIN profiles_history ph1 ON p.profile_id=ph1.profile_id
     INNER JOIN profiles_history ph2 ON p.profile_id=ph2.profile_id
-WHERE date(ph1.metering_date) = :date1
-    AND date(ph2.metering_date) = :date2
+WHERE date(ph1.metering_date) = :date AND
+    date(ph2.metering_date) = (SELECT MAX(date(ph3.metering_date)) result
+                                   FROM profiles_history ph3
+                                   WHERE ph3.profile_id = ph2.profile_id AND
+                                   (date(metering_date) < :date OR
+                                       (date(ph3.metering_date) = :date AND NOT EXISTS
+                                           (SELECT ph4.profiles_history_id FROM profiles_history ph4
+                                           WHERE ph4.profile_id = ph2.profile_id AND date(ph4.metering_date) < :date)
+                                       )
+                                   ))
 ORDER BY p.profile_name;
 
-getDateOrBefore:
-SELECT MAX(date(metering_date)) result
-    FROM profiles_history
-WHERE date(metering_date) <= :date;
-
-getDateBefore:
-SELECT MAX(date(metering_date)) result
-    FROM profiles_history
-WHERE date(metering_date) < :date;
-
 getProfileHistoryPosts:
+SELECT metering_date, count_posts FROM (
 SELECT date(ph.metering_date) metering_date, ph.count_posts
 FROM profiles_history ph
 WHERE ph.profile_id = :profileId
-ORDER BY ph.metering_date
-LIMIT 30;
+ORDER BY ph.metering_date DESC
+LIMIT 30)
+ORDER BY metering_date;
 
 getProfileHistoryFollowers:
+SELECT metering_date, count_followers FROM (
 SELECT date(ph.metering_date) metering_date, ph.count_followers
 FROM profiles_history ph
 WHERE ph.profile_id = :profileId
-ORDER BY ph.metering_date
-LIMIT 30;
+ORDER BY ph.metering_date DESC
+LIMIT 30)
+ORDER BY metering_date;
 
 getProfileHistoryFollowings:
+SELECT metering_date, count_followings FROM (
 SELECT date(ph.metering_date) metering_date, ph.count_followings
 FROM profiles_history ph
 WHERE ph.profile_id = :profileId
-ORDER BY ph.metering_date
-LIMIT 30;
+ORDER BY ph.metering_date DESC
+LIMIT 30)
+ORDER BY metering_date;

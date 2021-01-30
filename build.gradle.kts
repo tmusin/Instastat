@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "ru.musintimur"
-version = "1.0"
+version = "1.002"
 val mainServerClassName = "ru.musintimur.instastat.MainAppKt"
 
 repositories {
@@ -170,14 +170,23 @@ tasks.getByName<JavaExec>("run") {
     classpath(
         tasks.getByName<Jar>("jvmJar")
     )
-    environment(
-        Pair("INSTASTAT_STATIC_FOLDER", absolutStaticPath),
-        Pair("INSTASTAT_DB_CATALOG", absolutDatabasePath),
-        Pair("FIREFOX_BIN_PATH", "/usr/bin/firefox"),
-        Pair("GECKO_BIN_PATH", "/usr/bin/geckodriver"),
-        Pair("LOGGING", "true"),
-        Pair("ERROR_LOGGING", "true")
+
+    val envs = mutableMapOf(
+        "INSTASTAT_STATIC_FOLDER" to absolutStaticPath,
+        "INSTASTAT_DB_CATALOG" to absolutDatabasePath,
+        "FIREFOX_BIN_PATH" to "/usr/bin/firefox",
+        "GECKO_BIN_PATH" to "/usr/bin/geckodriver",
+        "LOGGING" to "true",
+        "ERROR_LOGGING" to "true"
     )
+
+    val secretsFile = File("${project.rootDir}/secrets.credentials")
+    secretsFile.forEachLine { line ->
+        val property = line.split('=', limit = 2)
+        if (property.size == 2) envs[property[0]] = property[1]
+    }
+
+    environment(envs)
 }
 
 tasks.withType<ShadowJar> {

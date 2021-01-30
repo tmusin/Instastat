@@ -20,7 +20,7 @@ fun setupFormStartParsing(form: HTMLFormElement) {
     animateParserProgressBar(progressBar, job)
     request.setupPost(url) {
         progressBar.style.visibility = "hidden"
-        job.cancel()
+        if (job.isActive) job.cancel()
     }.send()
 }
 

@@ -7,9 +7,7 @@ import io.ktor.locations.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.routing.get
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import kotlinx.html.DIV
 import ru.musintimur.instastat.common.constants.*
 import ru.musintimur.instastat.extensions.asSqlLiteDate
@@ -18,10 +16,13 @@ import ru.musintimur.instastat.extensions.respondDiv
 import ru.musintimur.instastat.common.messages.ParserProgress
 import ru.musintimur.instastat.common.messages.PeriodHistory
 import ru.musintimur.instastat.parsers.Selenium
+import ru.musintimur.instastat.parsers.doAuth
+import ru.musintimur.instastat.parsers.doLogout
 import ru.musintimur.instastat.parsers.parsePage
 import ru.musintimur.instastat.repository.Repository
 import ru.musintimur.instastat.web.components.statTableReport
 import java.time.LocalDate
+import kotlin.random.Random
 
 private var isParsingStart = false
 
@@ -45,22 +46,28 @@ data class ProfileHistoryFollowings(val profileName: String)
 fun Route.api(db: Repository) {
     post(API_START_PARSING) {
         if (isParsingStart) return@post
-        "Start parsing...".log()
+        "Начинаем проверку аккаунтов...".log()
         isParsingStart = true
 
         runCatching {
-            val profiles = withContext(Dispatchers.IO) {
-                db.profiles.getAllActiveProfilesForUpdate()
+            val profiles = db.profiles.getAllActiveProfilesForUpdate()
+            if (profiles.isNotEmpty()) {
+                Selenium.initSelenium()
+                delay(3000)
+                doAuth()
+                delay(3000)
+                profiles.forEach { profile ->
+                    parsePage(db, profile)
+                    delay(Random.nextInt(5, 13) * 1000L)
+                }
+                delay(3000)
+                doLogout()
+                delay(3000)
+                Selenium.closeSelenium()
+                "Обработка окончена.".log()
+            } else {
+                "На сегодня вся информация уже собрана.".log()
             }
-            Selenium.initSelenium()
-            delay(3000)
-            profiles.forEach { profile ->
-                parsePage(db, profile)
-                delay(10000)
-            }
-            Selenium.closeSelenium()
-        }.onFailure {
-            "Error: ${it.message}".log(call)
         }
         isParsingStart = false
         call.respondText { "OK" }
@@ -85,7 +92,7 @@ fun Route.api(db: Repository) {
         db.profiles.getProfileByName(name)?.let {
             val result = db.profilesHistory.getProfileHistoryPosts(it)
             call.respond(PeriodHistory(result))
-        } ?: call.respond(HttpStatusCode.NotFound, "Data not found")
+        } ?: call.respond(HttpStatusCode.NotFound, "Данные не найдены.")
     }
 
     get<ProfileHistoryFollowers> { profile ->
@@ -93,7 +100,7 @@ fun Route.api(db: Repository) {
         db.profiles.getProfileByName(name)?.let {
             val result = db.profilesHistory.getProfileHistoryFollowers(it)
             call.respond(PeriodHistory(result))
-        } ?: call.respond(HttpStatusCode.NotFound, "Data not found")
+        } ?: call.respond(HttpStatusCode.NotFound, "Данные не найдены.")
     }
 
     get<ProfileHistoryFollowings> { profile ->
@@ -101,6 +108,6 @@ fun Route.api(db: Repository) {
         db.profiles.getProfileByName(name)?.let {
             val result = db.profilesHistory.getProfileHistoryFollowings(it)
             call.respond(PeriodHistory(result))
-        } ?: call.respond(HttpStatusCode.NotFound, "Data not found")
+        } ?: call.respond(HttpStatusCode.NotFound, "Данные не найдены.")
     }
 }

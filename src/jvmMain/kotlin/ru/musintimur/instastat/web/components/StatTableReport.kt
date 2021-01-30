@@ -4,6 +4,7 @@ import kotlinx.html.*
 import ru.musintimur.instastat.common.constants.CLS_BOOTSTRAP_TABLE
 import ru.musintimur.instastat.common.constants.ICON_INSTAGRAM
 import ru.musintimur.instastat.common.constants.CLS_MINI_ICON
+import ru.musintimur.instastat.extensions.padZeros
 import ru.musintimur.instastat.extensions.setColoredCell
 import ru.musintimur.instastat.model.entities.PeriodReportRecord
 import ru.musintimur.instastat.parsers.getFullProfileUrl
@@ -20,9 +21,10 @@ fun DIV.statTableReport(data: List<PeriodReportRecord>) {
                 th { +"Followers" }
                 th { +"Followings" }
             }
-            data.forEach { record ->
+            data.forEachIndexed { index, record ->
                 tr {
                     td {
+                        +"${index.inc().padZeros(2)}."
                         a {
                             href = getFullProfileUrl(record.title)
                             target = "_blank"

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="InstastatMutliplatform-js-1.002">
+    <output-path>$PROJECT_DIR$/build/libs</output-path>
+    <root id="archive" name="InstastatMutliplatform-js-1.002.jar">
+      <element id="module-output" name="InstastatMutliplatform.jsMain" />
+    </root>
+  </artifact>
+</component>

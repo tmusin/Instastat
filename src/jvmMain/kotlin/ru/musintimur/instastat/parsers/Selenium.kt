@@ -15,9 +15,9 @@ object Selenium {
     lateinit var seleniumWait: WebDriverWait
 
     fun initSelenium() {
-        "\nCalling selenium Web Driver...".log()
-        val pathBinary = FirefoxBinary(File(System.getenv(ENV_FIREFOX_BIN_PATH)))
-        System.setProperty("webdriver.gecko.driver", System.getenv(ENV_GECKO_BIN_PATH))
+        "\nЗапускаем Selenium Web Driver...".log()
+        val pathBinary = FirefoxBinary(File(System.getenv("FIREFOX_BIN_PATH")))
+        System.setProperty("webdriver.gecko.driver", System.getenv("GECKO_BIN_PATH"))
         val ffOptions = FirefoxOptions().apply {
             binary = pathBinary
             setHeadless(true)
@@ -28,7 +28,7 @@ object Selenium {
     }
 
     fun closeSelenium() {
-        "\nClosing selenium Web Driver..".log()
+        "\nЗакрываем Selenium Web Driver..".log()
         seleniumDriver.quit()
     }
 

@@ -16,7 +16,9 @@ fun getStatType(html: WebElement): StatType {
     return when {
         hrefText.contains("source=profile_posts") -> StatType.Publications
         hrefText.contains("source=followed_by_list") -> StatType.Followers
+        hrefText.contains("followers") -> StatType.Followers
         hrefText.contains("source=follows_list") -> StatType.Followings
-        else -> throw IllegalArgumentException("Illegal web element.")
+        hrefText.contains("following") -> StatType.Followings
+        else -> throw IllegalArgumentException("Неверный компонент страницы: ${html.tagName}")
     }
 }

@@ -12,12 +12,13 @@ import ru.musintimur.instastat.model.entities.Profile
 import ru.musintimur.instastat.model.entities.Statistics
 import ru.musintimur.instastat.repository.Repository
 
-const val statBlockClassName = "k9GMp"
-const val statLiClassName = "Y8-fY"
-const val statSpanClassName = "g47SY"
+private const val statBlockClassName = "k9GMp"
+private const val statPropertyClassName = "-nal3"
+private const val statLiClassName = "Y8-fY"
+private const val statSpanClassName = "g47SY"
 
 suspend fun parsePage(db: Repository, profile: Profile) {
-    "\nParsing profile: ${profile.profileName}".log()
+    "\nЧтение аккаунта: ${profile.profileName}".log()
     val profileUrl = getFullProfileUrl(profile.profileName)
     val selDriver = Selenium.seleniumDriver
     val wait = Selenium.seleniumWait
@@ -26,13 +27,13 @@ suspend fun parsePage(db: Repository, profile: Profile) {
         selDriver.get(profileUrl)
         wait.until(presenceOfElementLocated(By.className(statBlockClassName)))
         val statBlock = selDriver.findElementByClassName(statBlockClassName)
-        val stats = statBlock.findElements(By.tagName("li"))
+        val stats = statBlock.findElements(By.className(statLiClassName))
         if (stats.isNotEmpty()) {
             val statistics = Statistics(0, 0, 0)
             stats.forEach { li ->
-                val aTag = li.findElement(By.tagName("a"))
-                val staType = getStatType(aTag)
-                val spanTag = aTag.findElement(By.tagName("span"))
+                val property = li.findElement(By.className(statPropertyClassName))
+                val statType = if (property.tagName == "span") StatType.Publications else getStatType(property)
+                val spanTag = property.findElement(By.className(statSpanClassName))
                 val spanText = spanTag.text
                 var count = 0L
                 runCatching {
@@ -40,17 +41,17 @@ suspend fun parsePage(db: Repository, profile: Profile) {
                 }.onSuccess {
                     count = it
                 }.onFailure { error ->
-                    "Fail 1: ${error.message}".errorLog()
+                    "Некритичная ошибка 1: ${error.message}".errorLog()
                     runCatching {
                         spanTag.getAttribute("title").parseLong()
                     }.onSuccess {
                         count = it
                     }.onFailure {
-                        "Fail 2: ${it.message}".errorLog()
+                        "Некритичная ошибка 2: ${it.message}".errorLog()
                     }
                 }
-                "$count ${staType.name}".log()
-                when (staType) {
+                "$count ${statType.name}".log()
+                when (statType) {
                     StatType.Publications -> statistics.posts = count
                     StatType.Followers -> statistics.followers = count
                     StatType.Followings -> statistics.followings = count
@@ -60,9 +61,9 @@ suspend fun parsePage(db: Repository, profile: Profile) {
                 db.profilesHistory.insertNewStatistics(profile, statistics)
             }
         } else {
-            "Spans not found!".log()
+            "Не найдены ожидаемые блоки страницы!".log()
         }
     } catch (e: Exception) {
-        "Exception on parsing ${profile.profileName}: ${e.message}".errorLog()
+        "Ошибка при обработке аккаунта ${profile.profileName}: ${e.message}".errorLog()
     }
 }

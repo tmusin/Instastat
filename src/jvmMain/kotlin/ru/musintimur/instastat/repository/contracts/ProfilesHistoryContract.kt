@@ -10,7 +10,7 @@ interface ProfilesHistoryContract {
 
     suspend fun getLastMeasure(profile: Profile? = null): LocalDate?
     suspend fun insertNewStatistics(profile: Profile, statistics: Statistics)
-    suspend fun getPostsHistory(dt1: LocalDate = LocalDate.now(), dt2: LocalDate? = null): List<PeriodReportRecord>
+    suspend fun getPostsHistory(dt1: LocalDate = LocalDate.now()): List<PeriodReportRecord>
     suspend fun getProfileHistoryPosts(profile: Profile): List<DayCount>
     suspend fun getProfileHistoryFollowers(profile: Profile): List<DayCount>
     suspend fun getProfileHistoryFollowings(profile: Profile): List<DayCount>
