@@ -8,7 +8,8 @@ external class Chart(ctx: dynamic, config: dynamic)
 
 data class Dataset(
     val label: String,
-    val data: Array<Long>
+    val data: Array<Long>,
+    val borderColor: String = "blue"
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -38,5 +39,18 @@ fun getChartConfig(
     val data = object {
         val labels = labels
         val datasets = arrayOf(Dataset(name, dataset))
+    }
+    val options = object {
+        val scales = object {
+            val xAxes = arrayOf(
+                object {
+                    val ticks = object {
+                        val callback = { value: String, _: Int, _: Array<dynamic> ->
+                            value.substring(0,10)
+                        }
+                    }
+                }
+            )
+        }
     }
 }.asJsObject()

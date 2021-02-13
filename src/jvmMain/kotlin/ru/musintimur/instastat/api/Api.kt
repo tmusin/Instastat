@@ -28,7 +28,7 @@ private var isParsingStart = false
 
 @KtorExperimentalLocationsAPI
 @Location(API_DAY_REPORT)
-data class DayReport(val dateOfReport: String)
+data class DayReport(val dateOfReport: String, val sortOrdering: String?)
 
 @KtorExperimentalLocationsAPI
 @Location(API_PROFILE_HISTORY_POSTS_PARAMETER)
@@ -75,9 +75,10 @@ fun Route.api(db: Repository) {
 
     get<DayReport> { dayReport ->
         val date = dayReport.dateOfReport.asSqlLiteDate() ?: LocalDate.now()
+        val sortOrdering = dayReport.sortOrdering ?: DROPDOWN_SORT_TYPE_AZ
         val report = db.profilesHistory.getPostsHistory(date)
         val statReportFunction: DIV.() -> Unit = {
-            statTableReport(report)
+            statTableReport(report, sortOrdering)
         }
         call.respondDiv(statReportFunction, STAT_REPORT_BLOCK)
     }

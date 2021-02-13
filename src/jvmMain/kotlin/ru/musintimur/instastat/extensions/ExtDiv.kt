@@ -22,3 +22,7 @@ fun DIV.ariaValueMin(value: Int) {
 fun DIV.ariaValueMax(value: Int) {
     StringAttribute()[this, ATTR_ARIA_VALUE_MAX] = value.toString()
 }
+
+fun DIV.ariaLabelLedBy(value: String) {
+    StringAttribute()[this, "aria-labelledby"] = value
+}

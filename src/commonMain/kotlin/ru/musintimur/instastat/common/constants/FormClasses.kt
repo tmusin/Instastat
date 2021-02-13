@@ -4,3 +4,5 @@ package ru.musintimur.instastat.common.constants
 const val CLS_FORM_DATE_PICKER = "class-form-datepicker"
 
 const val CLS_FORM_START_PARSING = "class-form-start-parsing"
+
+const val FORM_ACTION_VOID = "javascript:void(0);"

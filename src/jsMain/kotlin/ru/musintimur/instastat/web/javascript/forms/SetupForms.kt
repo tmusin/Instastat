@@ -14,7 +14,7 @@ fun setupForms() {
             when {
                 form.classList.contains(CLS_FORM_DATE_PICKER) -> {
                     form.onsubmit = { event ->
-                        setupFormStatReport(form)
+                        onSubmitFormStatReport(form)
                         event.preventDefault()
                     }
                 }

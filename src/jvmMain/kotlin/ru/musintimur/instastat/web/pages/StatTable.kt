@@ -6,6 +6,7 @@ import ru.musintimur.instastat.api.DayReport
 import ru.musintimur.instastat.common.constants.*
 import ru.musintimur.instastat.extensions.*
 import ru.musintimur.instastat.model.entities.PeriodReportRecord
+import ru.musintimur.instastat.web.components.customDropdown
 import ru.musintimur.instastat.web.components.statTableReport
 import java.time.LocalDate
 
@@ -20,6 +21,7 @@ fun BODY.statTable(date: LocalDate, report: List<PeriodReportRecord>, todayProgr
                 div {
                     classes = setOf(CLS_COL_MD_AUTO)
                     form {
+                        id = FORM_ID_REPORT
                         classes = setOf(CLS_FORM_DATE_PICKER, CLS_BOOTSTRAP_FORM_INLINE, CLS_ML_2, CLS_MY_2, CLS_MY_LG_2)
                         div {
                             classes = setOf(CLS_BOOTSTRAP_INPUT_GROUP)
@@ -29,6 +31,10 @@ fun BODY.statTable(date: LocalDate, report: List<PeriodReportRecord>, todayProgr
                                 dataProvide("datepicker")
                                 name = DayReport::dateOfReport.name
                                 value = date.toSqlLiteText()
+                            }
+                            hiddenInput {
+                                name = DayReport::sortOrdering.name
+                                value = DROPDOWN_SORT_TYPE_AZ
                             }
                             submitInput {
                                 classes = setOf(BUTTON_BOOTSTRAP, BUTTON_BOOTSTRAP_SECONDARY, CLS_ML_2)
@@ -77,8 +83,10 @@ fun BODY.statTable(date: LocalDate, report: List<PeriodReportRecord>, todayProgr
         }
 
         br { }
+
         div {
             id = STAT_REPORT_BLOCK_OUTER
+
             div {
                 id = STAT_REPORT_BLOCK
                 statTableReport(report)

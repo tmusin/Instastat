@@ -13,8 +13,9 @@ import ru.musintimur.instastat.web.javascript.extensions.applyUrlParams
 import ru.musintimur.instastat.web.javascript.extensions.asHTMLInputElement
 import ru.musintimur.instastat.web.javascript.extensions.collectParameters
 import ru.musintimur.instastat.web.javascript.extensions.setupGet
+import ru.musintimur.instastat.web.javascript.setupAll
 
-fun setupFormStatReport(form: HTMLFormElement) {
+fun onSubmitFormStatReport(form: HTMLFormElement) {
     val date = form.getElementsByClassName(CLS_BOOTSTRAP_DATE_PICKER)[0]?.asHTMLInputElement()?.value
     if (date.isNullOrBlank()) return
 
@@ -26,5 +27,6 @@ fun setupFormStatReport(form: HTMLFormElement) {
     val request = XMLHttpRequest()
     request.setupGet(url) {
         reportBlock.innerHTML = request.responseText
+        setupAll()
     }.send()
 }

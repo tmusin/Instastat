@@ -67,7 +67,7 @@ ORDER BY p.profile_name;
 
 getProfileHistoryPosts:
 SELECT metering_date, count_posts FROM (
-SELECT date(ph.metering_date) metering_date, ph.count_posts
+SELECT ph.metering_date, ph.count_posts
 FROM profiles_history ph
 WHERE ph.profile_id = :profileId
 ORDER BY ph.metering_date DESC
@@ -76,7 +76,7 @@ ORDER BY metering_date;
 
 getProfileHistoryFollowers:
 SELECT metering_date, count_followers FROM (
-SELECT date(ph.metering_date) metering_date, ph.count_followers
+SELECT ph.metering_date metering_date, ph.count_followers
 FROM profiles_history ph
 WHERE ph.profile_id = :profileId
 ORDER BY ph.metering_date DESC
@@ -85,7 +85,7 @@ ORDER BY metering_date;
 
 getProfileHistoryFollowings:
 SELECT metering_date, count_followings FROM (
-SELECT date(ph.metering_date) metering_date, ph.count_followings
+SELECT ph.metering_date metering_date, ph.count_followings
 FROM profiles_history ph
 WHERE ph.profile_id = :profileId
 ORDER BY ph.metering_date DESC

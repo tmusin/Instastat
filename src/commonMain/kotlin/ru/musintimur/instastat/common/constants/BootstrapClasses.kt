@@ -31,3 +31,7 @@ const val CLS_BOOTSTRAP_NAV_BAR_BRAND = "navbar-brand"
 const val CLS_BOOTSTRAP_NAV_BAR_LIGHT = "navbar-light"
 const val CLS_BOOTSTRAP_NAV_BAR_COLLAPSE = "navbar-collapse"
 const val CLS_BOOTSTRAP_NAV_BAR_EXPAND_SM = "navbar-expand-sm"
+
+const val CLS_BOOTSTRAP_DROPDOWN = "dropdown"
+const val CLS_BOOTSTRAP_DROPDOWN_TOGGLE = "dropdown-toggle"
+const val CLS_BOOTSTRAP_DROPDOWN_MENU = "dropdown-menu"
