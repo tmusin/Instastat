@@ -33,18 +33,18 @@ class ProfilesHistoryRepository(private val queries: InstastatDatabaseQueries) :
                 )
             }
 
-    override suspend fun getProfileHistoryPosts(profile: Profile): List<DayCount> =
-        queries.getProfileHistoryPosts(profile.profileId).executeAsList().map{
+    override suspend fun getProfileHistoryPosts(profile: Profile, date1: String, date2: String): List<DayCount> =
+        queries.getProfileHistoryPosts(profile.profileId, date1, date2).executeAsList().map{
             DayCount(it.metering_date, it.count_posts)
         }
 
-    override suspend fun getProfileHistoryFollowers(profile: Profile): List<DayCount> =
-        queries.getProfileHistoryFollowers(profile.profileId).executeAsList().map{
+    override suspend fun getProfileHistoryFollowers(profile: Profile, date1: String, date2: String): List<DayCount> =
+        queries.getProfileHistoryFollowers(profile.profileId, date1, date2).executeAsList().map{
             DayCount(it.metering_date, it.count_followers)
         }
 
-    override suspend fun getProfileHistoryFollowings(profile: Profile): List<DayCount> =
-        queries.getProfileHistoryFollowings(profile.profileId).executeAsList().map{
+    override suspend fun getProfileHistoryFollowings(profile: Profile, date1: String, date2: String): List<DayCount> =
+        queries.getProfileHistoryFollowings(profile.profileId, date1, date2).executeAsList().map{
             DayCount(it.metering_date, it.count_followings)
         }
 }

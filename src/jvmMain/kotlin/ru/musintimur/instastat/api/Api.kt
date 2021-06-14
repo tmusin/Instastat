@@ -1,7 +1,6 @@
 package ru.musintimur.instastat.api
 
 import io.ktor.application.*
-import io.ktor.html.*
 import io.ktor.http.*
 import io.ktor.locations.*
 import io.ktor.response.*
@@ -20,6 +19,7 @@ import ru.musintimur.instastat.parsers.doAuth
 import ru.musintimur.instastat.parsers.doLogout
 import ru.musintimur.instastat.parsers.parsePage
 import ru.musintimur.instastat.repository.Repository
+import ru.musintimur.instastat.web.components.createCharts
 import ru.musintimur.instastat.web.components.statTableReport
 import java.time.LocalDate
 import kotlin.random.Random
@@ -31,16 +31,20 @@ private var isParsingStart = false
 data class DayReport(val dateOfReport: String, val sortOrdering: String?)
 
 @KtorExperimentalLocationsAPI
-@Location(API_PROFILE_HISTORY_POSTS_PARAMETER)
-data class ProfileHistoryPosts(val profileName: String)
+@Location(API_GRAPH_BLOCK)
+data class GraphBlock(val profileName: String, val date1: String, val date2: String)
 
 @KtorExperimentalLocationsAPI
-@Location(API_PROFILE_HISTORY_FOLLOWERS_PARAMETER)
-data class ProfileHistoryFollowers(val profileName: String)
+@Location(API_PROFILE_HISTORY_POSTS)
+data class ProfileHistoryPosts(val profileName: String, val date1: String, val date2: String)
 
 @KtorExperimentalLocationsAPI
-@Location(API_PROFILE_HISTORY_FOLLOWINGS_PARAMETER)
-data class ProfileHistoryFollowings(val profileName: String)
+@Location(API_PROFILE_HISTORY_FOLLOWERS)
+data class ProfileHistoryFollowers(val profileName: String, val date1: String, val date2: String)
+
+@KtorExperimentalLocationsAPI
+@Location(API_PROFILE_HISTORY_FOLLOWINGS)
+data class ProfileHistoryFollowings(val profileName: String, val date1: String, val date2: String)
 
 @KtorExperimentalLocationsAPI
 fun Route.api(db: Repository) {
@@ -83,6 +87,13 @@ fun Route.api(db: Repository) {
         call.respondDiv(statReportFunction, STAT_REPORT_BLOCK)
     }
 
+    get<GraphBlock> { graphBlock ->
+        val statReportFunction: DIV.() -> Unit = {
+            createCharts(graphBlock)
+        }
+        call.respondDiv(statReportFunction, STAT_GRAPH_BLOCK)
+    }
+
     get(API_PARSE_PROGRESS) {
         val progress = db.profiles.getParserProgress()
         call.respond(ParserProgress(progress))
@@ -91,7 +102,7 @@ fun Route.api(db: Repository) {
     get<ProfileHistoryPosts> { profile ->
         val name = profile.profileName
         db.profiles.getProfileByName(name)?.let {
-            val result = db.profilesHistory.getProfileHistoryPosts(it)
+            val result = db.profilesHistory.getProfileHistoryPosts(it, profile.date1, profile.date2)
             call.respond(PeriodHistory(result))
         } ?: call.respond(HttpStatusCode.NotFound, "Данные не найдены.")
     }
@@ -99,7 +110,7 @@ fun Route.api(db: Repository) {
     get<ProfileHistoryFollowers> { profile ->
         val name = profile.profileName
         db.profiles.getProfileByName(name)?.let {
-            val result = db.profilesHistory.getProfileHistoryFollowers(it)
+            val result = db.profilesHistory.getProfileHistoryFollowers(it, profile.date1, profile.date2)
             call.respond(PeriodHistory(result))
         } ?: call.respond(HttpStatusCode.NotFound, "Данные не найдены.")
     }
@@ -107,7 +118,7 @@ fun Route.api(db: Repository) {
     get<ProfileHistoryFollowings> { profile ->
         val name = profile.profileName
         db.profiles.getProfileByName(name)?.let {
-            val result = db.profilesHistory.getProfileHistoryFollowings(it)
+            val result = db.profilesHistory.getProfileHistoryFollowings(it, profile.date1, profile.date2)
             call.respond(PeriodHistory(result))
         } ?: call.respond(HttpStatusCode.NotFound, "Данные не найдены.")
     }

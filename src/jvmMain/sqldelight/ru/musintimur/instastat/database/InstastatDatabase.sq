@@ -70,8 +70,8 @@ SELECT metering_date, count_posts FROM (
 SELECT ph.metering_date, ph.count_posts
 FROM profiles_history ph
 WHERE ph.profile_id = :profileId
-ORDER BY ph.metering_date DESC
-LIMIT 30)
+AND date(ph.metering_date) BETWEEN :date1 AND :date2
+ORDER BY ph.metering_date DESC)
 ORDER BY metering_date;
 
 getProfileHistoryFollowers:
@@ -79,8 +79,8 @@ SELECT metering_date, count_followers FROM (
 SELECT ph.metering_date metering_date, ph.count_followers
 FROM profiles_history ph
 WHERE ph.profile_id = :profileId
-ORDER BY ph.metering_date DESC
-LIMIT 30)
+AND date(ph.metering_date) BETWEEN :date1 AND :date2
+ORDER BY ph.metering_date DESC)
 ORDER BY metering_date;
 
 getProfileHistoryFollowings:
@@ -88,6 +88,6 @@ SELECT metering_date, count_followings FROM (
 SELECT ph.metering_date metering_date, ph.count_followings
 FROM profiles_history ph
 WHERE ph.profile_id = :profileId
-ORDER BY ph.metering_date DESC
-LIMIT 30)
+AND date(ph.metering_date) BETWEEN :date1 AND :date2
+ORDER BY ph.metering_date DESC)
 ORDER BY metering_date;

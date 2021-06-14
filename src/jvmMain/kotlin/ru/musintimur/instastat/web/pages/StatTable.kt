@@ -6,7 +6,6 @@ import ru.musintimur.instastat.api.DayReport
 import ru.musintimur.instastat.common.constants.*
 import ru.musintimur.instastat.extensions.*
 import ru.musintimur.instastat.model.entities.PeriodReportRecord
-import ru.musintimur.instastat.web.components.customDropdown
 import ru.musintimur.instastat.web.components.statTableReport
 import java.time.LocalDate
 
@@ -47,6 +46,7 @@ fun BODY.statTable(date: LocalDate, report: List<PeriodReportRecord>, todayProgr
                     div {
                         classes = setOf(CLS_COL_MD_AUTO)
                         form {
+                            id = FORM_ID_PARSING
                             classes =
                                 setOf(
                                     CLS_FORM_START_PARSING,

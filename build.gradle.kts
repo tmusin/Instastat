@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "ru.musintimur"
-version = "1.002"
+version = "1.004"
 val mainServerClassName = "ru.musintimur.instastat.MainAppKt"
 
 repositories {

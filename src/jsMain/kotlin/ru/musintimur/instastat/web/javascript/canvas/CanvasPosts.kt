@@ -2,12 +2,11 @@ package ru.musintimur.instastat.web.javascript.canvas
 
 import org.w3c.dom.HTMLCanvasElement
 import org.w3c.xhr.XMLHttpRequest
-import ru.musintimur.instastat.common.constants.API_PROFILE_HISTORY_FOLLOWERS
-import ru.musintimur.instastat.common.constants.API_PROFILE_HISTORY_FOLLOWINGS
-import ru.musintimur.instastat.common.constants.API_PROFILE_HISTORY_POSTS
-import ru.musintimur.instastat.common.constants.ATTR_PROFILE_NAME
+import ru.musintimur.instastat.common.constants.*
 import ru.musintimur.instastat.common.messages.DayCount
 import ru.musintimur.instastat.common.messages.PeriodHistory
+import ru.musintimur.instastat.web.javascript.extensions.applyUrlParams
+import ru.musintimur.instastat.web.javascript.extensions.collectParameters
 import ru.musintimur.instastat.web.javascript.extensions.setupGet
 import ru.musintimur.instastat.web.javascript.external.*
 
@@ -28,27 +27,27 @@ private fun drawChart(canvas: HTMLCanvasElement, json: String, name: String) {
 }
 
 fun setupCanvasPosts(canvas: HTMLCanvasElement) {
-    val profileName = canvas.getAttribute(ATTR_PROFILE_NAME)
+    val params = canvas.collectParameters()
     val request = XMLHttpRequest()
-    request.setupGet("$API_PROFILE_HISTORY_POSTS/$profileName") {
+    request.setupGet(API_PROFILE_HISTORY_POSTS.applyUrlParams(params)) {
         val result = request.responseText
         drawChart(canvas, result, "Posts")
     }.send()
 }
 
 fun setupCanvasFollowers(canvas: HTMLCanvasElement) {
-    val profileName = canvas.getAttribute(ATTR_PROFILE_NAME)
+    val params = canvas.collectParameters()
     val request = XMLHttpRequest()
-    request.setupGet("$API_PROFILE_HISTORY_FOLLOWERS/$profileName") {
+    request.setupGet(API_PROFILE_HISTORY_FOLLOWERS.applyUrlParams(params)) {
         val result = request.responseText
         drawChart(canvas, result, "Followers")
     }.send()
 }
 
 fun setupCanvasFollowings(canvas: HTMLCanvasElement) {
-    val profileName = canvas.getAttribute(ATTR_PROFILE_NAME)
+    val params = canvas.collectParameters()
     val request = XMLHttpRequest()
-    request.setupGet("$API_PROFILE_HISTORY_FOLLOWINGS/$profileName") {
+    request.setupGet(API_PROFILE_HISTORY_FOLLOWINGS.applyUrlParams(params)) {
         val result = request.responseText
         drawChart(canvas, result, "Followings")
     }.send()
