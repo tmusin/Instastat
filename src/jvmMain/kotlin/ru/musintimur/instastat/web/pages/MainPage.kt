@@ -20,6 +20,9 @@ const val MAIN_PAGE_NAME = "Главная"
 const val DICTIONARY_PAGE = "/accounts"
 const val DICTIONARY_PAGE_NAME = "Аккаунты"
 
+const val COMMENTS_PAGE = "/comments"
+const val COMMENTS_PAGE_NAME = "Комментарии"
+
 @KtorExperimentalLocationsAPI
 @KtorExperimentalAPI
 fun Route.mainPage(db: Repository) {

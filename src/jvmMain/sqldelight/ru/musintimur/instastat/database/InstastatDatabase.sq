@@ -91,3 +91,11 @@ WHERE ph.profile_id = :profileId
 AND date(ph.metering_date) BETWEEN :date1 AND :date2
 ORDER BY ph.metering_date DESC)
 ORDER BY metering_date;
+
+setProfileActivity:
+UPDATE profiles SET is_active = :isActive
+WHERE profile_id = :profileId;
+
+insertNewProfile:
+INSERT INTO profiles (profile_name, is_active)
+VALUES (:profileName, 1);

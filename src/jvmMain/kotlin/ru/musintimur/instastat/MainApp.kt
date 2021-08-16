@@ -17,6 +17,7 @@ import ru.musintimur.instastat.repository.Repository
 import ru.musintimur.instastat.web.links.getStaticIconsFolder
 import ru.musintimur.instastat.web.links.getStaticScriptsFolder
 import ru.musintimur.instastat.web.links.getStaticStylesFolder
+import ru.musintimur.instastat.web.pages.dictionaryPage
 import ru.musintimur.instastat.web.pages.mainPage
 import ru.musintimur.instastat.web.pages.profiles
 import ru.musintimur.instastat.web.styles.styles
@@ -50,6 +51,7 @@ fun Application.module() {
         }
         styles()
         mainPage(repository)
+        dictionaryPage(repository)
         profiles()
         api(repository)
     }

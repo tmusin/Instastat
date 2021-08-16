@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    kotlin("multiplatform") version "1.4.21"
-    id("com.github.johnrengelman.shadow") version "6.1.0"
+    kotlin("multiplatform") version "1.5.10"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
     id("com.squareup.sqldelight") version "1.4.4"
     application
 }
@@ -13,11 +13,10 @@ version = "1.004"
 val mainServerClassName = "ru.musintimur.instastat.MainAppKt"
 
 repositories {
-    jcenter()
+    google()
     mavenCentral()
-    maven { url = uri("https://dl.bintray.com/kotlin/kotlin-js-wrappers") }
-    maven { url = uri("https://dl.bintray.com/kotlin/kotlinx") }
-    maven { url = uri("https://dl.bintray.com/kotlin/ktor") }
+    maven { url = uri("https://maven.pkg.jetbrains.space/kotlin/p/kotlin/kotlin-js-wrappers") }
+    maven { url = uri("https://www.jetbrains.com/intellij-repository/releases") }
 }
 
 kotlin {
@@ -57,14 +56,14 @@ kotlin {
         }
         val jvmMain by getting {
             dependencies {
-                val ktorVersion = "1.4.0"
+                val ktorVersion = "1.6.2"
                 implementation("io.ktor:ktor-server-netty:$ktorVersion")
                 implementation("io.ktor:ktor-html-builder:$ktorVersion")
                 implementation("io.ktor:ktor-locations:$ktorVersion")
                 implementation("io.ktor:ktor-gson:$ktorVersion")
 
-                implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.2")
-                implementation("org.jetbrains:kotlin-css:1.0.0-pre.111-kotlin-1.4.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
+                implementation("org.jetbrains:kotlin-css:1.0.0-pre.156-kotlin-1.5.0")
 
                 val sqlDelightVersion = "1.4.4"
                 implementation("com.squareup.sqldelight:sqlite-driver:$sqlDelightVersion")
@@ -72,7 +71,7 @@ kotlin {
 
                 implementation("org.seleniumhq.selenium:selenium-java:3.141.59")
 
-                implementation("ch.qos.logback:logback-classic:1.2.3")
+                implementation("ch.qos.logback:logback-classic:1.2.5")
             }
             sqldelight {
                 database("InstastatDatabase") {
@@ -87,8 +86,8 @@ kotlin {
         }
         val jsMain by getting {
             dependencies {
-                implementation("org.jetbrains:kotlin-react:16.13.1-pre.113-kotlin-1.4.0")
-                implementation("org.jetbrains:kotlin-react-dom:16.13.1-pre.113-kotlin-1.4.0")
+                implementation("org.jetbrains:kotlin-react:17.0.2-pre.156-kotlin-1.5.0")
+                implementation("org.jetbrains:kotlin-react-dom:17.0.2-pre.156-kotlin-1.5.0")
                 implementation(npm("chart.js", "2.9.4"))
             }
         }
@@ -127,6 +126,10 @@ val absolutDatabasePath = File(project.projectDir, databaseFolder)
 
 application {
     mainClassName = mainServerClassName
+}
+
+tasks.named<Copy>("jvmProcessResources") {
+    duplicatesStrategy = DuplicatesStrategy.WARN
 }
 
 tasks.getByName<KotlinWebpack>("jsBrowserProductionWebpack") {

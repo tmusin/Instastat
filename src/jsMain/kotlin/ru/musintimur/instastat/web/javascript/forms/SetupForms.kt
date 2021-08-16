@@ -29,6 +29,12 @@ fun setupForms() {
                         event.preventDefault()
                     }
                 }
+                FORM_ID_ADD_PROFILE -> {
+                    form.onsubmit = { event ->
+                        onProfileSubmit(form)
+                        event.preventDefault()
+                    }
+                }
             }
         }
     }

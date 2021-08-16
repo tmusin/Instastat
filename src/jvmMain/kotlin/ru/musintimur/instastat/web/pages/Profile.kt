@@ -28,7 +28,7 @@ data class ProfilePage(val profileName: String)
 fun Route.profiles() {
     get<ProfilePage> { page ->
         val date2 = LocalDate.now().toSqlLiteText()
-        val date1 = LocalDate.now().minusMonths(6L).toSqlLiteText()
+        val date1 = LocalDate.now().minusMonths(1L).toSqlLiteText()
         call.respondHtml {
             pageTemplate(page.profileName, { datePickerScript() } ) {
                 div {

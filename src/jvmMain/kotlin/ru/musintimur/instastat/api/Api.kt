@@ -3,6 +3,7 @@ package ru.musintimur.instastat.api
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.locations.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.routing.get
@@ -45,6 +46,10 @@ data class ProfileHistoryFollowers(val profileName: String, val date1: String, v
 @KtorExperimentalLocationsAPI
 @Location(API_PROFILE_HISTORY_FOLLOWINGS)
 data class ProfileHistoryFollowings(val profileName: String, val date1: String, val date2: String)
+
+@KtorExperimentalLocationsAPI
+@Location(API_PROFILE_ACTIVATE)
+data class ProfileActivate(val profileId: Long, val isActive: Boolean)
 
 @KtorExperimentalLocationsAPI
 fun Route.api(db: Repository) {
@@ -121,5 +126,30 @@ fun Route.api(db: Repository) {
             val result = db.profilesHistory.getProfileHistoryFollowings(it, profile.date1, profile.date2)
             call.respond(PeriodHistory(result))
         } ?: call.respond(HttpStatusCode.NotFound, "Данные не найдены.")
+    }
+
+    post(API_PROFILE_ACTIVATE) {
+        val webParameters = call.receiveParameters()
+        val profileId = webParameters["profileId"]?.toLongOrNull()
+            ?: throw IllegalArgumentException("Invalid profile ID.")
+        val active: Boolean = webParameters["isActive"]?.toBoolean() == true
+        db.profiles.setProfileActivity(profileId, active)
+        call.respond("OK")
+    }
+
+    post(API_ADD_PROFILE) {
+        val webParameters = call.receiveParameters()
+        val profileName = webParameters["profileName"]
+
+        when {
+            profileName.isNullOrBlank() ->
+                call.respond(HttpStatusCode.NotAcceptable, "Пустое имя профиля.")
+            db.profiles.getProfileByName(profileName.lowercase().trim()) != null ->
+                call.respond(HttpStatusCode.Conflict, "Профиль уже добавлен.")
+            else -> {
+                db.profiles.addProfile(profileName)
+                call.respond(HttpStatusCode.OK, HttpStatusCode.OK.description)
+            }
+        }
     }
 }

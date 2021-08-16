@@ -8,7 +8,8 @@ import ru.musintimur.instastat.web.pages.*
 
 val mainSections: Map<String, String> = mapOf(
     MAIN_PAGE_NAME to MAIN_PAGE,
-    DICTIONARY_PAGE_NAME to DICTIONARY_PAGE
+    DICTIONARY_PAGE_NAME to DICTIONARY_PAGE,
+    COMMENTS_PAGE_NAME to COMMENTS_PAGE
 )
 
 val emptyMenu: Map<String, String> = emptyMap
@@ -24,7 +25,7 @@ fun HTML.pageTemplate(pageName: String, additionalScripts: (BODY.() -> Unit)? = 
         customCss()
     }
     body {
-        navigationBar(NAVIGATION_BAR_MAIN, emptyMenu)
+        navigationBar(NAVIGATION_BAR_MAIN, mainSections)
         pageContent()
         staticScripts()
         bootstrapJs()
