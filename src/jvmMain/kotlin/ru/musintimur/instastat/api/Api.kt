@@ -15,6 +15,8 @@ import ru.musintimur.instastat.extensions.log
 import ru.musintimur.instastat.extensions.respondDiv
 import ru.musintimur.instastat.common.messages.ParserProgress
 import ru.musintimur.instastat.common.messages.PeriodHistory
+import ru.musintimur.instastat.model.entities.Post
+import ru.musintimur.instastat.model.entities.Profile
 import ru.musintimur.instastat.parsers.Selenium
 import ru.musintimur.instastat.parsers.doAuth
 import ru.musintimur.instastat.parsers.doLogout
@@ -26,6 +28,7 @@ import java.time.LocalDate
 import kotlin.random.Random
 
 private var isParsingStart = false
+private const val INSTAGRAM_LINK_PREFIX = "https://www.instagram.com/p/"
 
 @KtorExperimentalLocationsAPI
 @Location(API_DAY_REPORT)
@@ -139,7 +142,7 @@ fun Route.api(db: Repository) {
 
     post(API_ADD_PROFILE) {
         val webParameters = call.receiveParameters()
-        val profileName = webParameters["profileName"]
+        val profileName = webParameters[Profile::profileName.name]?.lowercase()?.trim()
 
         when {
             profileName.isNullOrBlank() ->
@@ -148,6 +151,27 @@ fun Route.api(db: Repository) {
                 call.respond(HttpStatusCode.Conflict, "Профиль уже добавлен.")
             else -> {
                 db.profiles.addProfile(profileName)
+                call.respond(HttpStatusCode.OK, HttpStatusCode.OK.description)
+            }
+        }
+    }
+
+    post(API_ADD_POST) {
+        val webParameters = call.receiveParameters()
+        val postUrl = webParameters[Post::postUrl.name]?.trim()
+
+        when {
+            postUrl.isNullOrBlank() ->
+                call.respond(HttpStatusCode.NotAcceptable, "Пустая ссылка на пост.")
+            postUrl.length != 40
+                    || !postUrl.startsWith(INSTAGRAM_LINK_PREFIX)
+                    || !postUrl.endsWith('/')
+                    || postUrl.substringAfter(INSTAGRAM_LINK_PREFIX).count { it == '/' } != 1 ->
+                call.respond(HttpStatusCode.NotAcceptable, "Неправильная ссылка на пост.")
+            db.posts.getPostByUrl(postUrl) != null ->
+                call.respond(HttpStatusCode.Conflict, "Пост уже добавлен.")
+            else -> {
+                db.posts.addPost(postUrl)
                 call.respond(HttpStatusCode.OK, HttpStatusCode.OK.description)
             }
         }

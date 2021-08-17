@@ -55,7 +55,7 @@ fun DIV.statTableReport(data: List<PeriodReportRecord>,
                             }
                         }
                         a {
-                            href = "$PROFILE_PAGE/${record.title}/"
+                            href = "$PROFILE_PAGE/${record.title}"
                             target = "_blank"
                             +record.title
                         }

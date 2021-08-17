@@ -34,6 +34,6 @@ class ProfilesRepository(private val queries: InstastatDatabaseQueries) : Profil
     }
 
     override suspend fun addProfile(profileName: String) {
-        queries.insertNewProfile(profileName.lowercase().trim())
+        queries.insertNewProfile(profileName)
     }
 }

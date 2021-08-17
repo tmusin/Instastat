@@ -16,6 +16,15 @@ CREATE TABLE IF NOT EXISTS profiles_history (
 );
 CREATE INDEX IF NOT EXISTS profiles_history_profile_id_idx ON profiles_history(profile_id);
 
+CREATE TABLE IF NOT EXISTS posts (
+	post_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	post_url TEXT NOT NULL,
+	post_date TEXT,
+	post_text TEXT,
+	comments_count INTEGER NOT NULL DEFAULT 0
+);
+CREATE UNIQUE INDEX IF NOT EXISTS profiles_post_url_id_idx ON posts(post_url);
+
 getAllProfiles:
 SELECT * FROM profiles;
 
@@ -99,3 +108,13 @@ WHERE profile_id = :profileId;
 insertNewProfile:
 INSERT INTO profiles (profile_name, is_active)
 VALUES (:profileName, 1);
+
+getAllPosts:
+SELECT * FROM posts ORDER BY post_date DESC;
+
+getPostByUrl:
+SELECT p.* FROM posts p
+WHERE p.post_url = :postUrl;
+
+insertNewPost:
+INSERT INTO posts (post_url) VALUES (:postUrl);

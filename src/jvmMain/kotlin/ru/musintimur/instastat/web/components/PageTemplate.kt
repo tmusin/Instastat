@@ -9,7 +9,7 @@ import ru.musintimur.instastat.web.pages.*
 val mainSections: Map<String, String> = mapOf(
     MAIN_PAGE_NAME to MAIN_PAGE,
     DICTIONARY_PAGE_NAME to DICTIONARY_PAGE,
-    COMMENTS_PAGE_NAME to COMMENTS_PAGE
+    POSTS_PAGE_NAME to POSTS_PAGE
 )
 
 val emptyMenu: Map<String, String> = emptyMap

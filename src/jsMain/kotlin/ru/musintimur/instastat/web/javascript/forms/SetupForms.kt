@@ -35,6 +35,12 @@ fun setupForms() {
                         event.preventDefault()
                     }
                 }
+                FORM_ID_ADD_POST -> {
+                    form.onsubmit = { event ->
+                        onPostSubmit(form)
+                        event.preventDefault()
+                    }
+                }
             }
         }
     }

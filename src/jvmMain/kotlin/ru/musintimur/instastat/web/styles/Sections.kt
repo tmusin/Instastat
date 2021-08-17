@@ -5,6 +5,7 @@ import kotlinx.css.LinearDimension
 import kotlinx.css.marginTop
 import ru.musintimur.instastat.common.constants.CLS_ACCOUNTS_SECTION
 import ru.musintimur.instastat.common.constants.CLS_CANVAS_SECTION
+import ru.musintimur.instastat.common.constants.CLS_POSTS_SECTION
 import ru.musintimur.instastat.common.constants.CLS_REPORTS_SECTION
 
 fun CSSBuilder.sections() {
@@ -16,6 +17,9 @@ fun CSSBuilder.sections() {
         marginTop = LinearDimension("${topMargin}px")
     }
     rule(".$CLS_ACCOUNTS_SECTION") {
+        marginTop = LinearDimension("${topMargin}px")
+    }
+    rule(".$CLS_POSTS_SECTION") {
         marginTop = LinearDimension("${topMargin}px")
     }
 }

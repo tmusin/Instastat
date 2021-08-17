@@ -12,6 +12,9 @@ const val CLS_CANVAS_SECTION = "class-canvas-section"
 //Блок, содержащий словарь аккаунтов
 const val CLS_ACCOUNTS_SECTION = "class-accounts-section"
 
+//Блок, содержащий список постов для выгрузки комментариев
+const val CLS_POSTS_SECTION = "class-posts-section"
+
 //Внешний контейнер с прогресс-баром
 const val CLS_PROGRESS = "progress"
 

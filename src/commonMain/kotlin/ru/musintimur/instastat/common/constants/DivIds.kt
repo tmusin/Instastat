@@ -11,3 +11,4 @@ const val STAT_GRAPH_BLOCK = "stat-graph-block"
 const val STAT_GRAPH_BLOCK_OUTER = "stat-graph-block-outer"
 
 const val ADD_PROFILE_MESSAGE = "add-profile-message"
+const val ADD_POST_MESSAGE = "add-post-message"

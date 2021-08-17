@@ -24,7 +24,7 @@ fun Route.dictionaryPage(db: Repository) {
                     div {
                         classes = setOf(CLS_ROW, CLS_ML_4)
                         buttonInput {
-                            classes = setOf(CLS_INPUT)
+                            classes = setOf(CLS_INPUT, BUTTON_BOOTSTRAP_PRIMARY)
                             id = INPUT_ID_BUTTON_ADD_PROFILE
                             value = "Добавить"
                         }
