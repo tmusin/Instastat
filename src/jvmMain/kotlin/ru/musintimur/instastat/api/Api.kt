@@ -17,10 +17,7 @@ import ru.musintimur.instastat.common.messages.ParserProgress
 import ru.musintimur.instastat.common.messages.PeriodHistory
 import ru.musintimur.instastat.model.entities.Post
 import ru.musintimur.instastat.model.entities.Profile
-import ru.musintimur.instastat.parsers.Selenium
-import ru.musintimur.instastat.parsers.doAuth
-import ru.musintimur.instastat.parsers.doLogout
-import ru.musintimur.instastat.parsers.parsePage
+import ru.musintimur.instastat.parsers.*
 import ru.musintimur.instastat.repository.Repository
 import ru.musintimur.instastat.web.components.createCharts
 import ru.musintimur.instastat.web.components.statTableReport
@@ -68,7 +65,8 @@ fun Route.api(db: Repository) {
                 delay(3000)
                 doAuth()
                 delay(3000)
-                profiles.forEach { profile ->
+                //profiles.forEach { profile ->
+                profiles.firstOrNull()?.let { profile ->
                     parsePage(db, profile)
                     delay(Random.nextInt(5, 13) * 1000L)
                 }
@@ -175,5 +173,39 @@ fun Route.api(db: Repository) {
                 call.respond(HttpStatusCode.OK, HttpStatusCode.OK.description)
             }
         }
+    }
+
+    post(API_PARSE_POST) {
+        if (isParsingStart) {
+            "Дождитесь окончания другого процесса".log()
+            return@post
+        }
+        isParsingStart = true
+        val webParameters = call.receiveParameters()
+        val postUrl = webParameters[Post::postUrl.name]?.trim()
+        if (postUrl == null) {
+            "Пустой параметр ссылки на пост.".log()
+            return@post
+        }
+        val post = db.posts.getPostByUrl(postUrl)
+        if (post == null) {
+            "Поста нет в БД".log()
+            return@post
+        }
+
+        runCatching {
+            Selenium.initSelenium()
+            delay(3000)
+            doAuth()
+            delay(3000)
+            parsePost(db, post)
+            delay(3000)
+            doLogout()
+            delay(3000)
+            Selenium.closeSelenium()
+            "Обработка окончена.".log()
+        }
+        isParsingStart = false
+        call.respondText { "OK" }
     }
 }

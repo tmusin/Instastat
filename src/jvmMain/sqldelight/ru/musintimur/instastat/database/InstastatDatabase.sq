@@ -25,6 +25,14 @@ CREATE TABLE IF NOT EXISTS posts (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS profiles_post_url_id_idx ON posts(post_url);
 
+CREATE TABLE IF NOT EXISTS comments (
+    comment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    post_id INTEGER NOT NULL,
+    comment_author TEXT NOT NULL,
+    comment_text TEXT NOT NULL,
+    CONSTRAINT comments_fk FOREIGN KEY (post_id) REFERENCES posts(post_id) ON UPDATE RESTRICT ON DELETE RESTRICT
+);
+
 getAllProfiles:
 SELECT * FROM profiles;
 
@@ -118,3 +126,29 @@ WHERE p.post_url = :postUrl;
 
 insertNewPost:
 INSERT INTO posts (post_url) VALUES (:postUrl);
+
+updatePostDateTime:
+UPDATE posts SET post_date = :postDate
+WHERE post_url = :postUrl;
+
+updatePostText:
+UPDATE posts SET post_text = :postText
+WHERE post_url = :postUrl;
+
+updatePostCommentsCount:
+UPDATE posts SET comments_count = :commentsCount
+WHERE post_url = :postUrl;
+
+insertNewComment:
+INSERT INTO comments (post_id, comment_author, comment_text)
+VALUES (:postId, :commentAuthor, :commentText);
+
+findComment:
+SELECT * FROM comments
+WHERE post_id = :postId
+AND comment_author = :commentAuthor
+AND comment_text = :commentText;
+
+calculatePostComments:
+SELECT COUNT(*) FROM comments
+WHERE post_id = :postId;

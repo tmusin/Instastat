@@ -2,8 +2,10 @@ package ru.musintimur.instastat.repository.implementations
 
 import ru.musintimur.instastat.database.InstastatDatabaseQueries
 import ru.musintimur.instastat.extensions.asSqlLiteDateTime
+import ru.musintimur.instastat.extensions.toSqlLiteText
 import ru.musintimur.instastat.model.entities.Post
 import ru.musintimur.instastat.repository.contracts.PostsContract
+import java.time.LocalDateTime
 
 class PostsRepository(private val queries: InstastatDatabaseQueries): PostsContract {
 
@@ -19,5 +21,17 @@ class PostsRepository(private val queries: InstastatDatabaseQueries): PostsContr
 
     override suspend fun addPost(url: String) {
         queries.insertNewPost(url)
+    }
+
+    override suspend fun updateDateTime(url: String, datetime: LocalDateTime) {
+        queries.updatePostDateTime(datetime.toSqlLiteText(), url)
+    }
+
+    override suspend fun updateText(url: String, text: String) {
+        queries.updatePostText(text, url)
+    }
+
+    override suspend fun updateCommentsCount(url: String, count: Long) {
+        queries.updatePostCommentsCount(count, url)
     }
 }

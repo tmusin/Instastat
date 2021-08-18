@@ -20,7 +20,7 @@ private const val notNowButtonClass = "cmbtv"
 
 private const val avatarClass = "qNELH"
 private const val menuClass = "_7UhW9"
-private const val scriptDiv = "oZBNB"
+private const val scriptDiv = "_01UL2"
 
 fun doAuth() {
     "\nВыполняется вход в профиль под учетной записью $username...".log()

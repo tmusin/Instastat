@@ -29,6 +29,7 @@ const val CLS_COL_MD_AUTO = "col-md-auto"
 
 const val CLS_ML_2 = "ml-2"
 const val CLS_ML_4 = "ml-4"
+const val CLS_MR_2 = "mr-2"
 const val CLS_MY_2 = "my-2"
 const val CLS_MT_2 = "mt-2"
 const val CLS_MY_LG_2 = "my-lg-0"

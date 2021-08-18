@@ -7,6 +7,7 @@ import io.ktor.util.*
 import kotlinx.html.*
 import ru.musintimur.instastat.common.constants.*
 import ru.musintimur.instastat.extensions.padZeros
+import ru.musintimur.instastat.extensions.toSqlLiteText
 import ru.musintimur.instastat.model.entities.Post
 import ru.musintimur.instastat.repository.Repository
 import ru.musintimur.instastat.web.components.pageTemplate
@@ -30,7 +31,7 @@ fun Route.postsPage(db: Repository) {
                         }
                     }
                     div {
-                        classes = setOf(CLS_ROW, CLS_ML_2, CLS_MT_2)
+                        classes = setOf(CLS_ROW, CLS_ML_2, CLS_MT_2, CLS_MR_2)
                         table {
                             attributes["border"] = "1"
                             classes = setOf(CLS_BOOTSTRAP_TABLE)
@@ -39,6 +40,7 @@ fun Route.postsPage(db: Repository) {
                                 th { +"Post Date" }
                                 th { +"Post Text" }
                                 th { +"Comments" }
+                                th { }
                             }
                             posts.forEachIndexed { index, post ->
                                 tr {
@@ -51,13 +53,24 @@ fun Route.postsPage(db: Repository) {
                                         }
                                     }
                                     td {
-                                        post.postDate
+                                        post.postDate?.let {
+                                            +it.toSqlLiteText()
+                                        }
                                     }
                                     td {
-                                        post.postText?.take(30)
+                                        post.postText?.let {
+                                            +it
+                                        }
                                     }
                                     td {
-                                        post.commentsCount
+                                        +post.commentsCount.toString()
+                                    }
+                                    td {
+                                        buttonInput {
+                                            id = post.postUrl
+                                            classes = setOf(CLS_INPUT, CLS_INPUT_POST_ENTRY)
+                                            value = "Выгрузка"
+                                        }
                                     }
                                 }
                             }
