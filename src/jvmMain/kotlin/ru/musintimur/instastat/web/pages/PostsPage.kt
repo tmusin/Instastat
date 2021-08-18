@@ -63,7 +63,11 @@ fun Route.postsPage(db: Repository) {
                                         }
                                     }
                                     td {
-                                        +post.commentsCount.toString()
+                                        a {
+                                            href = "$COMMENTS_PAGE/${post.postId}"
+                                            target = "_blank"
+                                            +post.commentsCount.toString()
+                                        }
                                     }
                                     td {
                                         buttonInput {

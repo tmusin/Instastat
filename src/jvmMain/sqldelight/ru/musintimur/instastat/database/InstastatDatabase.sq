@@ -124,6 +124,10 @@ getPostByUrl:
 SELECT p.* FROM posts p
 WHERE p.post_url = :postUrl;
 
+getPostById:
+SELECT p.* FROM posts p
+WHERE p.post_id = :postId;
+
 insertNewPost:
 INSERT INTO posts (post_url) VALUES (:postUrl);
 
@@ -138,6 +142,9 @@ WHERE post_url = :postUrl;
 updatePostCommentsCount:
 UPDATE posts SET comments_count = :commentsCount
 WHERE post_url = :postUrl;
+
+getPostComments:
+SELECT * FROM comments WHERE post_id = :postId;
 
 insertNewComment:
 INSERT INTO comments (post_id, comment_author, comment_text)

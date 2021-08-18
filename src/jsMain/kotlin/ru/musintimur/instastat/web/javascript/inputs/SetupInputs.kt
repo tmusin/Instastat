@@ -26,6 +26,11 @@ fun setupInputs() {
                         window.location.replace("${window.location}/add")
                     }
                 }
+                element.id == INPUT_ID_BUTTON_PRINT_COMMENTS -> {
+                    element.onclick = {
+                        printComments(element)
+                    }
+                }
             }
         }
     }

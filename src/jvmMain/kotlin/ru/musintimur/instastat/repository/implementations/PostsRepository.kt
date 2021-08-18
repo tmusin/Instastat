@@ -19,6 +19,11 @@ class PostsRepository(private val queries: InstastatDatabaseQueries): PostsContr
             Post(it.post_id, it.post_url, it.post_date.asSqlLiteDateTime(), it.post_text, it.comments_count.toInt())
         }
 
+    override suspend fun getPostById(postId: Long): Post? =
+        queries.getPostById(postId).executeAsOneOrNull()?.let {
+            Post(it.post_id, it.post_url, it.post_date.asSqlLiteDateTime(), it.post_text, it.comments_count.toInt())
+        }
+
     override suspend fun addPost(url: String) {
         queries.insertNewPost(url)
     }

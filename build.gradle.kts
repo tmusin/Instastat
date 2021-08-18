@@ -72,6 +72,8 @@ kotlin {
                 implementation("org.seleniumhq.selenium:selenium-java:3.141.59")
 
                 implementation("ch.qos.logback:logback-classic:1.2.5")
+
+                implementation("org.apache.poi:poi:5.0.0")
             }
             sqldelight {
                 database("InstastatDatabase") {

@@ -7,21 +7,28 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.routing.get
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlinx.html.DIV
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import ru.musintimur.instastat.common.constants.*
 import ru.musintimur.instastat.extensions.asSqlLiteDate
 import ru.musintimur.instastat.extensions.log
 import ru.musintimur.instastat.extensions.respondDiv
 import ru.musintimur.instastat.common.messages.ParserProgress
 import ru.musintimur.instastat.common.messages.PeriodHistory
+import ru.musintimur.instastat.extensions.toSqlLiteText
 import ru.musintimur.instastat.model.entities.Post
 import ru.musintimur.instastat.model.entities.Profile
 import ru.musintimur.instastat.parsers.*
 import ru.musintimur.instastat.repository.Repository
 import ru.musintimur.instastat.web.components.createCharts
 import ru.musintimur.instastat.web.components.statTableReport
+import ru.musintimur.instastat.web.pages.CommentsPrint
+import java.io.FileOutputStream
 import java.time.LocalDate
+import java.time.LocalDateTime
 import kotlin.random.Random
 
 private var isParsingStart = false
@@ -207,5 +214,38 @@ fun Route.api(db: Repository) {
         }
         isParsingStart = false
         call.respondText { "OK" }
+    }
+
+    post(API_PRINT_COMMENTS) {
+        val webParameters = call.receiveParameters()
+        val postId = webParameters[Post::postId.name]?.trim()
+        if (postId == null) {
+            "Неверный ID поста".log()
+            return@post
+        }
+        val post = db.posts.getPostById(postId.toLong())
+        "Печать комментариев поста ${post?.postUrl}".log()
+        val comments = post?.let { db.comments.getPostComments(it) } ?: emptyList()
+        val workbook = HSSFWorkbook()
+        val helper = workbook.creationHelper
+        val id = post?.postUrl?.subSequence(28, 39)?.toString() ?: ""
+        val sheet = workbook.createSheet(id)
+        comments.forEachIndexed { index, comment ->
+            val row = sheet.createRow(index)
+            val cellAuthor = row.createCell(0)
+            cellAuthor.setCellValue(comment.author)
+            val cellComment = row.createCell(1)
+            cellComment.setCellValue(comment.text)
+        }
+        sheet.autoSizeColumn(0)
+        sheet.autoSizeColumn(1)
+        val fileName = "${LocalDateTime.now().toSqlLiteText()}-$id.xls"
+        fileName.log()
+        withContext(Dispatchers.IO) {
+            FileOutputStream(fileName).use {
+                workbook.write(it)
+                "Напечатано".log()
+            }
+        }
     }
 }

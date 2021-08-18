@@ -15,6 +15,9 @@ const val CLS_ACCOUNTS_SECTION = "class-accounts-section"
 //Блок, содержащий список постов для выгрузки комментариев
 const val CLS_POSTS_SECTION = "class-posts-section"
 
+//Блок, содержащий список комментариев
+const val CLS_COMMENTS_SECTION = "class-comments-section"
+
 //Внешний контейнер с прогресс-баром
 const val CLS_PROGRESS = "progress"
 

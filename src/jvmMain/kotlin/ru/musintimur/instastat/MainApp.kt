@@ -17,10 +17,7 @@ import ru.musintimur.instastat.repository.Repository
 import ru.musintimur.instastat.web.links.getStaticIconsFolder
 import ru.musintimur.instastat.web.links.getStaticScriptsFolder
 import ru.musintimur.instastat.web.links.getStaticStylesFolder
-import ru.musintimur.instastat.web.pages.dictionaryPage
-import ru.musintimur.instastat.web.pages.mainPage
-import ru.musintimur.instastat.web.pages.postsPage
-import ru.musintimur.instastat.web.pages.profiles
+import ru.musintimur.instastat.web.pages.*
 import ru.musintimur.instastat.web.styles.styles
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -55,6 +52,7 @@ fun Application.module() {
         dictionaryPage(repository)
         postsPage(repository)
         profiles()
+        comments(repository)
         api(repository)
     }
 }
