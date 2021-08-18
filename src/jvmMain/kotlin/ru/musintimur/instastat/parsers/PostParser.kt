@@ -2,6 +2,7 @@ package ru.musintimur.instastat.parsers
 
 import kotlinx.coroutines.delay
 import org.openqa.selenium.By
+import org.openqa.selenium.firefox.FirefoxDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable
 import ru.musintimur.instastat.extensions.errorLog
@@ -35,36 +36,42 @@ suspend fun parsePost(db: Repository, post: Post) {
 
         var commentsButton = selDriver.findElements(By.className(commentButtonClassName))
         "Грузим комментарии...".log()
+        saveComments(selDriver, db, post)
         while (commentsButton.isNotEmpty() && commentsButton.first().isDisplayed) {
             wait.until(elementToBeClickable(commentsButton.first()))
             commentsButton.first().click()
-            delay(1000)
+            delay(3000)
             commentsButton = selDriver.findElements(By.className(commentButtonClassName))
             "Ищем еще комментарии...".log()
+            saveComments(selDriver, db, post)
         }
-        val comments = selDriver.findElements(By.className(commentEntryClassName))
-        "Найдено комментариев верхнего уровня: ${comments.size}".log()
-        comments.forEach { comment ->
-            var commentAuthor = ""
-            var commentText = ""
-            comment.findElement(By.className(commentDivClassName))
-                .findElements(By.tagName("span"))
-                .forEach {
-                    if (it.getAttribute("class").isBlank()) {
-                        commentText = it.text
-                    } else {
-                        commentAuthor = it.text
-                    }
-                }
-            val oldComment = db.comments.findComment(post, commentAuthor, commentText)
-            if (oldComment == null) {
-                db.comments.addNewComment(post, commentAuthor, commentText)
-            }
-        }
+
         val commentsCount = db.comments.calculateComments(post)
+        "Найдено комментариев верхнего уровня: $commentsCount".log()
         db.posts.updateCommentsCount(postUrl, commentsCount)
 
     } catch (e: Exception) {
         "Ошибка при обработке поста ${postUrl}: ${e.message}".errorLog()
+    }
+}
+
+private suspend fun saveComments(selDriver: FirefoxDriver, db: Repository, post: Post) {
+    val comments = selDriver.findElements(By.className(commentEntryClassName))
+    comments.forEach { comment ->
+        var commentAuthor = ""
+        var commentText = ""
+        comment.findElement(By.className(commentDivClassName))
+            .findElements(By.tagName("span"))
+            .forEach {
+                if (it.getAttribute("class").isBlank()) {
+                    commentText = it.text
+                } else {
+                    commentAuthor = it.text
+                }
+            }
+        val oldComment = db.comments.findComment(post, commentAuthor, commentText)
+        if (oldComment == null) {
+            db.comments.addNewComment(post, commentAuthor, commentText)
+        }
     }
 }

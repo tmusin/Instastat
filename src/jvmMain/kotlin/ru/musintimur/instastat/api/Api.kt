@@ -72,8 +72,7 @@ fun Route.api(db: Repository) {
                 delay(3000)
                 doAuth()
                 delay(3000)
-                //profiles.forEach { profile ->
-                profiles.firstOrNull()?.let { profile ->
+                profiles.forEach { profile ->
                     parsePage(db, profile)
                     delay(Random.nextInt(5, 13) * 1000L)
                 }
@@ -168,8 +167,7 @@ fun Route.api(db: Repository) {
         when {
             postUrl.isNullOrBlank() ->
                 call.respond(HttpStatusCode.NotAcceptable, "Пустая ссылка на пост.")
-            postUrl.length != 40
-                    || !postUrl.startsWith(INSTAGRAM_LINK_PREFIX)
+            !postUrl.startsWith(INSTAGRAM_LINK_PREFIX)
                     || !postUrl.endsWith('/')
                     || postUrl.substringAfter(INSTAGRAM_LINK_PREFIX).count { it == '/' } != 1 ->
                 call.respond(HttpStatusCode.NotAcceptable, "Неправильная ссылка на пост.")

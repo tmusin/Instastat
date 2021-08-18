@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS posts (
 	post_text TEXT,
 	comments_count INTEGER NOT NULL DEFAULT 0
 );
-CREATE UNIQUE INDEX IF NOT EXISTS profiles_post_url_id_idx ON posts(post_url);
+CREATE UNIQUE INDEX IF NOT EXISTS posts_post_url_id_idx ON posts(post_url);
 
 CREATE TABLE IF NOT EXISTS comments (
     comment_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS comments (
     comment_text TEXT NOT NULL,
     CONSTRAINT comments_fk FOREIGN KEY (post_id) REFERENCES posts(post_id) ON UPDATE RESTRICT ON DELETE RESTRICT
 );
+CREATE INDEX IF NOT EXISTS comments_post_id_idx ON comments(post_id);
+CREATE INDEX IF NOT EXISTS comments_author_idx ON comments(comment_author);
 
 getAllProfiles:
 SELECT * FROM profiles;
