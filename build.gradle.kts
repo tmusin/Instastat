@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "ru.musintimur"
-version = "1.004"
+version = "1.005"
 val mainServerClassName = "ru.musintimur.instastat.MainAppKt"
 
 repositories {
@@ -182,7 +182,8 @@ tasks.getByName<JavaExec>("run") {
         "FIREFOX_BIN_PATH" to "/usr/bin/firefox",
         "GECKO_BIN_PATH" to "/usr/bin/geckodriver",
         "LOGGING" to "true",
-        "ERROR_LOGGING" to "true"
+        "ERROR_LOGGING" to "true",
+        "COMMENTS_REPORT_PATH" to "reports"
     )
 
     val secretsFile = File("${project.rootDir}/secrets.credentials")

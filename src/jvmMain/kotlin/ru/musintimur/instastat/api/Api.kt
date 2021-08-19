@@ -25,14 +25,18 @@ import ru.musintimur.instastat.parsers.*
 import ru.musintimur.instastat.repository.Repository
 import ru.musintimur.instastat.web.components.createCharts
 import ru.musintimur.instastat.web.components.statTableReport
-import ru.musintimur.instastat.web.pages.CommentsPrint
 import java.io.FileOutputStream
+import java.nio.file.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.random.Random
 
 private var isParsingStart = false
 private const val INSTAGRAM_LINK_PREFIX = "https://www.instagram.com/p/"
+
+private val printPath: String = runCatching {
+    System.getenv("COMMENTS_REPORT_PATH")
+}.getOrDefault("reports")
 
 @KtorExperimentalLocationsAPI
 @Location(API_DAY_REPORT)
@@ -53,10 +57,6 @@ data class ProfileHistoryFollowers(val profileName: String, val date1: String, v
 @KtorExperimentalLocationsAPI
 @Location(API_PROFILE_HISTORY_FOLLOWINGS)
 data class ProfileHistoryFollowings(val profileName: String, val date1: String, val date2: String)
-
-@KtorExperimentalLocationsAPI
-@Location(API_PROFILE_ACTIVATE)
-data class ProfileActivate(val profileId: Long, val isActive: Boolean)
 
 @KtorExperimentalLocationsAPI
 fun Route.api(db: Repository) {
@@ -225,7 +225,6 @@ fun Route.api(db: Repository) {
         "Печать комментариев поста ${post?.postUrl}".log()
         val comments = post?.let { db.comments.getPostComments(it) } ?: emptyList()
         val workbook = HSSFWorkbook()
-        val helper = workbook.creationHelper
         val id = post?.postUrl?.subSequence(28, 39)?.toString() ?: ""
         val sheet = workbook.createSheet(id)
         comments.forEachIndexed { index, comment ->
@@ -237,12 +236,16 @@ fun Route.api(db: Repository) {
         }
         sheet.autoSizeColumn(0)
         sheet.autoSizeColumn(1)
-        val fileName = "${LocalDateTime.now().toSqlLiteText()}-$id.xls"
+        val fileName = "${LocalDateTime.now().toSqlLiteText().replace(' ', '_')}_$id.xls"
         fileName.log()
         withContext(Dispatchers.IO) {
-            FileOutputStream(fileName).use {
-                workbook.write(it)
+            runCatching {
+                val createdFile = Paths.get(printPath, fileName).toFile()
+                FileOutputStream(createdFile).use { workbook.write(it) }
+            }.onSuccess {
                 "Напечатано".log()
+            }.onFailure {
+                "Ошибка при печати файла:\n${it.message}".log()
             }
         }
     }
