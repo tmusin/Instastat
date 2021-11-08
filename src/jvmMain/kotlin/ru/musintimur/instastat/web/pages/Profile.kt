@@ -4,7 +4,6 @@ import io.ktor.application.*
 import io.ktor.html.*
 import io.ktor.locations.*
 import io.ktor.routing.*
-import io.ktor.util.*
 import kotlinx.html.*
 import ru.musintimur.instastat.api.GraphBlock
 import ru.musintimur.instastat.common.constants.*
@@ -12,6 +11,7 @@ import ru.musintimur.instastat.extensions.dataDateFormat
 import ru.musintimur.instastat.extensions.dataProvide
 import ru.musintimur.instastat.extensions.datePickerScript
 import ru.musintimur.instastat.extensions.toSqlLiteText
+import ru.musintimur.instastat.web.auth.readUserGroupHash
 import ru.musintimur.instastat.web.components.createCharts
 import ru.musintimur.instastat.web.components.pageTemplate
 import java.time.LocalDate
@@ -23,14 +23,13 @@ const val PROFILE_PAGE_PARAMETER = "$PROFILE_PAGE/{profileName}"
 @Location(PROFILE_PAGE_PARAMETER)
 data class ProfilePage(val profileName: String)
 
-@KtorExperimentalAPI
 @KtorExperimentalLocationsAPI
 fun Route.profiles() {
     get<ProfilePage> { page ->
         val date2 = LocalDate.now().toSqlLiteText()
         val date1 = LocalDate.now().minusMonths(1L).toSqlLiteText()
         call.respondHtml {
-            pageTemplate(page.profileName, { datePickerScript() } ) {
+            pageTemplate(page.profileName, readUserGroupHash(this@get), { datePickerScript() } ) {
                 div {
                     classes = setOf(CLS_REPORTS_SECTION)
                     div {

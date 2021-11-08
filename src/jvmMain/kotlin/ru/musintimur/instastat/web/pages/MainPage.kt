@@ -4,11 +4,11 @@ import io.ktor.application.*
 import io.ktor.html.*
 import io.ktor.locations.*
 import io.ktor.routing.*
-import io.ktor.util.*
 import ru.musintimur.instastat.extensions.datePickerScript
 import ru.musintimur.instastat.extensions.log
 import ru.musintimur.instastat.extensions.toSqlLiteText
 import ru.musintimur.instastat.repository.Repository
+import ru.musintimur.instastat.web.auth.readUserGroupHash
 import ru.musintimur.instastat.web.components.pageTemplate
 import java.time.LocalDate
 
@@ -24,18 +24,16 @@ const val POSTS_PAGE = "/posts"
 const val POSTS_PAGE_NAME = "Посты"
 
 @KtorExperimentalLocationsAPI
-@KtorExperimentalAPI
 fun Route.mainPage(db: Repository) {
 
     get(MAIN_PAGE) {
         val reportDate = db.profilesHistory.getLastMeasure() ?: LocalDate.now()
-        reportDate.toSqlLiteText().log()
         val report = db.profilesHistory.getPostsHistory(reportDate)
         val todayProgress = db.profiles.getParserProgress()
-        todayProgress.toString().log()
+        if (todayProgress < 100) todayProgress.toString().log()
 
         call.respondHtml {
-            pageTemplate(MAIN_PAGE_NAME, { datePickerScript() } ) {
+            pageTemplate(MAIN_PAGE_NAME, readUserGroupHash(this@get), { datePickerScript() } ) {
                 statTable(reportDate, report, todayProgress)
             }
         }

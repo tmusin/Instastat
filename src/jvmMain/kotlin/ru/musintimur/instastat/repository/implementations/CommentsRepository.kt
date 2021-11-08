@@ -21,6 +21,6 @@ class CommentsRepository(private val queries: InstastatDatabaseQueries): Comment
             Comment(it.comment_id, it.post_id, it.comment_author, it.comment_text)
         }
 
-    override suspend fun calculateComments(post: Post): Long =
-        queries.calculatePostComments(post.postId).executeAsOne()
+    override suspend fun calculateComments(post: Post): Int =
+        queries.calculatePostComments(post.postId).executeAsOne().toInt()
 }

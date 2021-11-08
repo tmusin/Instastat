@@ -18,6 +18,8 @@ const val CLS_BOOTSTRAP_COLLAPSE = "collapse"
 const val CLS_BOOTSTRAP_FIXED_TOP = "fixed-top"
 
 const val CLS_BOOTSTRAP_JUSTIFY_CONTENT_CENTER = "justify-content-center"
+const val CLS_BOOTSTRAP_JUSTIFY_CONTENT_LEFT = "justify-content-left"
+const val CLS_BOOTSTRAP_JUSTIFY_CONTENT_RIGHT = "justify-content-right"
 
 const val CLS_BOOTSTRAP_BG_LIGHT = "bg-light"
 

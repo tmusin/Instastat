@@ -8,7 +8,7 @@ external class Chart(ctx: dynamic, config: dynamic)
 
 data class Dataset(
     val label: String,
-    val data: Array<Long>,
+    val data: Array<Int>,
     val borderColor: String = "blue"
 ) {
     override fun equals(other: Any?): Boolean {
@@ -32,7 +32,7 @@ data class Dataset(
 
 fun getChartConfig(
     labels: Array<String>,
-    dataset: Array<Long>,
+    dataset: Array<Int>,
     name: String
 ): dynamic = object {
     val type = "line"

@@ -3,23 +3,22 @@ package ru.musintimur.instastat.web.pages
 import io.ktor.application.*
 import io.ktor.html.*
 import io.ktor.routing.*
-import io.ktor.util.*
 import kotlinx.html.*
 import ru.musintimur.instastat.common.constants.*
 import ru.musintimur.instastat.extensions.padZeros
 import ru.musintimur.instastat.extensions.toSqlLiteText
 import ru.musintimur.instastat.model.entities.Post
 import ru.musintimur.instastat.repository.Repository
+import ru.musintimur.instastat.web.auth.readUserGroupHash
 import ru.musintimur.instastat.web.components.pageTemplate
 
 const val POSTS_PAGE_ADD = "$POSTS_PAGE/add"
 
-@KtorExperimentalAPI
 fun Route.postsPage(db: Repository) {
     get(POSTS_PAGE) {
         val posts = db.posts.getAllPosts()
         call.respondHtml {
-            pageTemplate(POSTS_PAGE_NAME) {
+            pageTemplate(POSTS_PAGE_NAME, readUserGroupHash(this@get)) {
                 div {
                     classes = setOf(CLS_POSTS_SECTION)
                     div {
@@ -87,7 +86,7 @@ fun Route.postsPage(db: Repository) {
 
     get(POSTS_PAGE_ADD) {
         call.respondHtml {
-            pageTemplate(POSTS_PAGE_NAME) {
+            pageTemplate(POSTS_PAGE_NAME, readUserGroupHash(this@get)) {
                 div {
                     classes = setOf(CLS_POSTS_SECTION)
                     form {

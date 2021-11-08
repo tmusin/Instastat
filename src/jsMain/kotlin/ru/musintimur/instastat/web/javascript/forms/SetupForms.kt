@@ -4,6 +4,7 @@ import kotlinx.browser.document
 import org.w3c.dom.HTMLFormElement
 import org.w3c.dom.get
 import ru.musintimur.instastat.common.constants.*
+import ru.musintimur.instastat.web.javascript.extensions.asHTMLParagraphElement
 
 fun setupForms() {
     val forms = document.forms
@@ -11,6 +12,12 @@ fun setupForms() {
         forms[i]?.let { item ->
             val form = item as HTMLFormElement
             when(form.id) {
+                FORM_ID_AUTHENTICATE -> {
+                    form.onsubmit = { event ->
+                        setupFormAuthenticate(form)
+                        event.preventDefault()
+                    }
+                }
                 FORM_ID_REPORT -> {
                     form.onsubmit = { event ->
                         onSubmitFormStatReport(form)

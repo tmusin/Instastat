@@ -5,7 +5,7 @@ import kotlinx.coroutines.withContext
 import org.openqa.selenium.By
 import ru.musintimur.instastat.extensions.log
 import org.openqa.selenium.support.ui.ExpectedConditions.presenceOfElementLocated
-import ru.musintimur.instastat.common.extensions.parseLong
+import ru.musintimur.instastat.common.extensions.parseInt
 import ru.musintimur.instastat.extensions.errorLog
 import ru.musintimur.instastat.model.StatType
 import ru.musintimur.instastat.model.entities.Profile
@@ -35,15 +35,15 @@ suspend fun parsePage(db: Repository, profile: Profile) {
                 val statType = if (property.tagName == "span") StatType.Publications else getStatType(property)
                 val spanTag = property.findElement(By.className(statSpanClassName))
                 val spanText = spanTag.text
-                var count = 0L
+                var count = 0
                 runCatching {
-                    spanText.parseLong()
+                    spanText.parseInt()
                 }.onSuccess {
                     count = it
                 }.onFailure { error ->
                     "Некритичная ошибка 1: ${error.message}".errorLog()
                     runCatching {
-                        spanTag.getAttribute("title").parseLong()
+                        spanTag.getAttribute("title").parseInt()
                     }.onSuccess {
                         count = it
                     }.onFailure {

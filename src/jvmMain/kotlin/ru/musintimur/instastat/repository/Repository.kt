@@ -1,9 +1,6 @@
 package ru.musintimur.instastat.repository
 
-import ru.musintimur.instastat.repository.contracts.CommentsContract
-import ru.musintimur.instastat.repository.contracts.PostsContract
-import ru.musintimur.instastat.repository.contracts.ProfilesContract
-import ru.musintimur.instastat.repository.contracts.ProfilesHistoryContract
+import ru.musintimur.instastat.repository.contracts.*
 
 interface Repository {
 
@@ -11,5 +8,6 @@ interface Repository {
     val profilesHistory: ProfilesHistoryContract
     val posts: PostsContract
     val comments: CommentsContract
+    val users: UsersContract
 
 }

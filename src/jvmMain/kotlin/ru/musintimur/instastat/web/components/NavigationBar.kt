@@ -1,15 +1,15 @@
 package ru.musintimur.instastat.web.components
 
-import io.ktor.util.*
 import kotlinx.html.*
 import ru.musintimur.instastat.common.constants.*
 import ru.musintimur.instastat.extensions.dataTarget
 import ru.musintimur.instastat.extensions.dataToggle
+import ru.musintimur.instastat.model.entities.UserGroups.Companion.signedInUserGroups
 import ru.musintimur.instastat.web.pages.MAIN_PAGE
 import ru.musintimur.instastat.web.pages.SITE_NAME
 
-@KtorExperimentalAPI
-fun BODY.navigationBar(nmId: String, menu: Map<String, String>) {
+fun BODY.navigationBar(nmId: String, menu: List<MainMenuEntry>, userGroupHash: String) {
+    val isSignedIn = userGroupHash in signedInUserGroups
     div {
         classes = setOf(CLS_BOOTSTRAP_CONTAINER, CLS_BOOTSTRAP_NAV_CONT)
         nav {
@@ -35,16 +35,37 @@ fun BODY.navigationBar(nmId: String, menu: Map<String, String>) {
                 id = NAVBAR_SUPPORTED_CONTENT
                 ul {
                     classes = setOf(CLS_BOOTSTRAP_NAV, CLS_BOOTSTRAP_NAV_BAR_NAV)
-                    menu.forEach {
-                        li {
-                            classes = setOf(CLS_BOOTSTRAP_NAV_ITEM)
-                            dataToggle("collapse")
-                            dataTarget(".navbar-collapse.show")
-                            a {
-                                classes = setOf(CLS_BOOTSTRAP_NAV_LINK)
-                                href = it.value
+                    menu.filter { it.predicate(userGroupHash) }
+                        .forEach {
+                            li {
+                                classes = setOf(CLS_BOOTSTRAP_NAV_ITEM)
+                                dataToggle("collapse")
+                                dataTarget(".navbar-collapse.show")
+                                a {
+                                    classes = setOf(CLS_BOOTSTRAP_NAV_LINK)
+                                    href = it.href
 
-                                +it.key
+                                    +it.entryCaption
+                                }
+                            }
+                        }
+                }
+            }
+            if (isSignedIn) {
+                form {
+                    classes = setOf("form-inline", "my-2", "my-lg-0")
+                    action = SIGN_OUT
+                    method = FormMethod.post
+                    div {
+                        classes = setOf("input-group")
+                        span {
+                            classes = setOf("input-group-btn", "ml-2")
+                            button {
+                                classes = setOf(BUTTON_BOOTSTRAP, BUTTON_BOOTSTRAP_SECONDARY)
+                                type = ButtonType.submit
+                                span {
+                                    classes = setOf("fa", "fa-sign-out")
+                                }
                             }
                         }
                     }

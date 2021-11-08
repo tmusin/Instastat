@@ -14,10 +14,10 @@ private fun drawChart(canvas: HTMLCanvasElement, json: String, name: String) {
     val history = JSON.parse<PeriodHistory>(json).entries.unsafeCast<Array<DayCount>>()
 
     val arrLabels = mutableListOf<String>()
-    val arrData = mutableListOf<Long>()
+    val arrData = mutableListOf<Int>()
     for (i in history.indices) {
         val value = history[i]
-        arrLabels.add(value.date)
+        arrLabels.add(value.date.substring(0,16))
         arrData.add(value.count)
     }
 

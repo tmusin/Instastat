@@ -3,22 +3,21 @@ package ru.musintimur.instastat.web.pages
 import io.ktor.application.*
 import io.ktor.html.*
 import io.ktor.routing.*
-import io.ktor.util.*
 import kotlinx.html.*
 import ru.musintimur.instastat.common.constants.*
 import ru.musintimur.instastat.extensions.padZeros
 import ru.musintimur.instastat.model.entities.Profile
 import ru.musintimur.instastat.repository.Repository
+import ru.musintimur.instastat.web.auth.readUserGroupHash
 import ru.musintimur.instastat.web.components.pageTemplate
 
 const val DICTIONARY_PAGE_ADD = "$DICTIONARY_PAGE/add"
 
-@KtorExperimentalAPI
 fun Route.dictionaryPage(db: Repository) {
     get(DICTIONARY_PAGE) {
         val accounts = db.profiles.getAllProfiles().sortedBy { it.profileName }
         call.respondHtml {
-            pageTemplate(DICTIONARY_PAGE_NAME) {
+            pageTemplate(DICTIONARY_PAGE_NAME, readUserGroupHash(this@get)) {
                 div {
                     classes = setOf(CLS_ACCOUNTS_SECTION)
                     div {
@@ -55,7 +54,7 @@ fun Route.dictionaryPage(db: Repository) {
 
     get(DICTIONARY_PAGE_ADD) {
         call.respondHtml {
-            pageTemplate(DICTIONARY_PAGE_NAME) {
+            pageTemplate(DICTIONARY_PAGE_NAME, readUserGroupHash(this@get)) {
                 div {
                     classes = setOf(CLS_ACCOUNTS_SECTION)
                     form {

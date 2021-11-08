@@ -41,3 +41,8 @@ const val CLS_MY_LG_2 = "my-lg-0"
 const val CLS_PROGRESS_BAR = "progress-bar"
 const val CLS_PROGRESS_BAR_STRIPPED = "progress-bar-striped"
 const val CLS_PROGRESS_BAR_ANIMATED = "progress-bar-animated"
+
+//Блок, содержащий форму авторизации
+const val CLS_AUTHENTICATE_SECTION = "authenticate-section"
+
+const val CLS_CONTAINER_BOOTSTRAP = "container"

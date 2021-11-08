@@ -25,3 +25,7 @@ fun String.removeComma(): String = this.replace(",", "")
 fun String.parseLong(): Long = runCatching {
     this.removeSpace().removeComma().toLong()
 }.getOrThrow()
+
+fun String.parseInt(): Int = runCatching {
+    this.removeSpace().removeComma().toInt()
+}.getOrThrow()

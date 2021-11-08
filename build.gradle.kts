@@ -2,14 +2,14 @@ import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
-    kotlin("multiplatform") version "1.5.10"
+    kotlin("multiplatform") version "1.5.31"
     id("com.github.johnrengelman.shadow") version "7.0.0"
-    id("com.squareup.sqldelight") version "1.4.4"
+    id("com.squareup.sqldelight") version "1.5.2"
     application
 }
 
 group = "ru.musintimur"
-version = "1.005"
+version = "1.0.6"
 val mainServerClassName = "ru.musintimur.instastat.MainAppKt"
 
 repositories {
@@ -61,12 +61,16 @@ kotlin {
                 implementation("io.ktor:ktor-html-builder:$ktorVersion")
                 implementation("io.ktor:ktor-locations:$ktorVersion")
                 implementation("io.ktor:ktor-gson:$ktorVersion")
+                implementation("io.ktor:ktor-auth:$ktorVersion")
+                implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
                 implementation("org.jetbrains:kotlin-css:1.0.0-pre.156-kotlin-1.5.0")
 
-                val sqlDelightVersion = "1.4.4"
+                val sqlDelightVersion = "1.5.2"
                 implementation("com.squareup.sqldelight:sqlite-driver:$sqlDelightVersion")
+                implementation("com.squareup.sqldelight:runtime-jvm:$sqlDelightVersion")
+                implementation("com.squareup.sqldelight:jdbc-driver:$sqlDelightVersion")
                 implementation("com.squareup.sqldelight:coroutines-extensions-jvm:$sqlDelightVersion")
 
                 implementation("org.seleniumhq.selenium:selenium-java:3.141.59")
@@ -74,10 +78,14 @@ kotlin {
                 implementation("ch.qos.logback:logback-classic:1.2.5")
 
                 implementation("org.apache.poi:poi:5.0.0")
+
+                implementation("org.postgresql:postgresql:42.3.1")
             }
             sqldelight {
                 database("InstastatDatabase") {
                     packageName = "ru.musintimur.instastat.database"
+                    dialect = "postgresql"
+                    sourceFolders = setOf("sqldelight")
                 }
             }
         }

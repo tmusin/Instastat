@@ -3,7 +3,6 @@ package ru.musintimur.instastat.web.javascript.forms
 import kotlinx.browser.document
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLFormElement
-import org.w3c.dom.events.Event
 import org.w3c.dom.get
 import org.w3c.xhr.XMLHttpRequest
 import ru.musintimur.instastat.common.constants.API_DAY_REPORT

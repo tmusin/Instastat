@@ -1,12 +1,27 @@
+CREATE TABLE IF NOT EXISTS usergroups (
+	usergroup_id INTEGER PRIMARY KEY,
+	usergroup_name TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS users (
+	user_id INTEGER PRIMARY KEY,
+	user_name TEXT NOT NULL,
+	usergroup_id INTEGER NOT NULL DEFAULT 4,
+	password_hash TEXT NOT NULL,
+	CONSTRAINT users_fk FOREIGN KEY (usergroup_id) REFERENCES usergroups(usergroup_id) ON DELETE SET NULL ON UPDATE CASCADE
+);
+CREATE INDEX IF NOT EXISTS users_user_name_idx ON users(user_name);
+CREATE INDEX IF NOT EXISTS users_usergroup_id_idx ON users(usergroup_id);
+
 CREATE TABLE IF NOT EXISTS profiles (
-	profile_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	profile_id INTEGER PRIMARY KEY,
 	profile_name TEXT NOT NULL,
 	is_active INTEGER AS Boolean NOT NULL DEFAULT 1
 );
 CREATE INDEX IF NOT EXISTS profiles_profile_name_id_idx ON profiles(profile_name);
 
 CREATE TABLE IF NOT EXISTS profiles_history (
-	profiles_history_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	profiles_history_id INTEGER PRIMARY KEY,
 	profile_id INTEGER NOT NULL,
 	metering_date TEXT NOT NULL,
 	count_posts INTEGER NOT NULL DEFAULT 0,
@@ -17,7 +32,7 @@ CREATE TABLE IF NOT EXISTS profiles_history (
 CREATE INDEX IF NOT EXISTS profiles_history_profile_id_idx ON profiles_history(profile_id);
 
 CREATE TABLE IF NOT EXISTS posts (
-	post_id INTEGER PRIMARY KEY AUTOINCREMENT,
+	post_id INTEGER PRIMARY KEY,
 	post_url TEXT NOT NULL,
 	post_date TEXT,
 	post_text TEXT,
@@ -26,7 +41,7 @@ CREATE TABLE IF NOT EXISTS posts (
 CREATE UNIQUE INDEX IF NOT EXISTS posts_post_url_id_idx ON posts(post_url);
 
 CREATE TABLE IF NOT EXISTS comments (
-    comment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    comment_id INTEGER PRIMARY KEY,
     post_id INTEGER NOT NULL,
     comment_author TEXT NOT NULL,
     comment_text TEXT NOT NULL,
@@ -49,7 +64,7 @@ AND NOT EXISTS (
     SELECT ph.profiles_history_id
     FROM profiles_history ph
     WHERE ph.profile_id = p.profile_id
-    AND date(metering_date) = DATE('now', 'localtime')
+    AND date(metering_date) = date('today')
 );
 
 getProfileByName:
@@ -62,7 +77,7 @@ SELECT MAX(date(metering_date)) result
 
 insertNewStatistics:
 INSERT INTO profiles_history(profile_id, metering_date, count_posts, count_followers, count_followings)
-    VALUES (:profile_id, DATETIME('now', 'localtime'), :count_posts, : count_followers, :count_followings);
+    VALUES (:profile_id, now(), :count_posts, : count_followers, :count_followings);
 
 compareDates:
 SELECT p.profile_name,
@@ -72,14 +87,14 @@ SELECT p.profile_name,
 FROM profiles p
     INNER JOIN profiles_history ph1 ON p.profile_id=ph1.profile_id
     INNER JOIN profiles_history ph2 ON p.profile_id=ph2.profile_id
-WHERE date(ph1.metering_date) = :date AND
+WHERE date(ph1.metering_date) = date(:date) AND
     date(ph2.metering_date) = (SELECT MAX(date(ph3.metering_date)) result
                                    FROM profiles_history ph3
                                    WHERE ph3.profile_id = ph2.profile_id AND
-                                   (date(metering_date) < :date OR
-                                       (date(ph3.metering_date) = :date AND NOT EXISTS
+                                   (date(metering_date) < date(:date) OR
+                                       (date(ph3.metering_date) = date(:date) AND NOT EXISTS
                                            (SELECT ph4.profiles_history_id FROM profiles_history ph4
-                                           WHERE ph4.profile_id = ph2.profile_id AND date(ph4.metering_date) < :date)
+                                           WHERE ph4.profile_id = ph2.profile_id AND date(ph4.metering_date) < date(:date))
                                        )
                                    ))
 ORDER BY p.profile_name;
@@ -89,8 +104,8 @@ SELECT metering_date, count_posts FROM (
 SELECT ph.metering_date, ph.count_posts
 FROM profiles_history ph
 WHERE ph.profile_id = :profileId
-AND date(ph.metering_date) BETWEEN :date1 AND :date2
-ORDER BY ph.metering_date DESC)
+AND date(ph.metering_date) BETWEEN date(:date1) AND date(:date2)
+ORDER BY ph.metering_date DESC) t
 ORDER BY metering_date;
 
 getProfileHistoryFollowers:
@@ -98,8 +113,8 @@ SELECT metering_date, count_followers FROM (
 SELECT ph.metering_date metering_date, ph.count_followers
 FROM profiles_history ph
 WHERE ph.profile_id = :profileId
-AND date(ph.metering_date) BETWEEN :date1 AND :date2
-ORDER BY ph.metering_date DESC)
+AND date(ph.metering_date) BETWEEN date(:date1) AND date(:date2)
+ORDER BY ph.metering_date DESC) t
 ORDER BY metering_date;
 
 getProfileHistoryFollowings:
@@ -107,8 +122,8 @@ SELECT metering_date, count_followings FROM (
 SELECT ph.metering_date metering_date, ph.count_followings
 FROM profiles_history ph
 WHERE ph.profile_id = :profileId
-AND date(ph.metering_date) BETWEEN :date1 AND :date2
-ORDER BY ph.metering_date DESC)
+AND date(ph.metering_date) BETWEEN date(:date1) AND date(:date2)
+ORDER BY ph.metering_date DESC) t
 ORDER BY metering_date;
 
 setProfileActivity:
@@ -161,3 +176,12 @@ AND comment_text = :commentText;
 calculatePostComments:
 SELECT COUNT(*) FROM comments
 WHERE post_id = :postId;
+
+getUserByName:
+SELECT * FROM users u
+WHERE lower(trim(u.user_name)) = lower(trim(:userName));
+
+checkCredentials:
+SELECT * FROM users u
+WHERE lower(trim(u.user_name)) = lower(trim(:userName))
+AND u.password_hash = :passwordHash;

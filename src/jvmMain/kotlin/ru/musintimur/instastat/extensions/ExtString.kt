@@ -15,10 +15,12 @@ private val isErrorLoggerOn: Boolean = runCatching {
 }.getOrDefault(false)
 
 fun String.log(call: ApplicationCall? = null) {
-    if (isLoggerOn) call?.application?.environment?.log?.info(this) ?: println(this)
+    val loggerString = "${LocalDateTime.now().toSqlLiteText()}: $this"
+    if (isLoggerOn) call?.application?.environment?.log?.info(loggerString) ?: println(loggerString)
 }
 fun String.errorLog(call: ApplicationCall? = null) {
-    if (isErrorLoggerOn) call?.application?.environment?.log?.info(this) ?: println(this)
+    val loggerString = "${LocalDateTime.now().toSqlLiteText()}: $this"
+    if (isErrorLoggerOn) call?.application?.environment?.log?.info(loggerString) ?: println(loggerString)
 }
 
 fun String?.asSqlLiteDateTime(): LocalDateTime? =

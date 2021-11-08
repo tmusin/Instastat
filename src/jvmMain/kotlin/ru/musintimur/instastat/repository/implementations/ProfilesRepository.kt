@@ -29,7 +29,7 @@ class ProfilesRepository(private val queries: InstastatDatabaseQueries) : Profil
              Profile(it.profile_id, it.profile_name, it.is_active)
          }
 
-    override suspend fun setProfileActivity(profileId: Long, isActive: Boolean) {
+    override suspend fun setProfileActivity(profileId: Int, isActive: Boolean) {
         queries.setProfileActivity(isActive, profileId)
     }
 

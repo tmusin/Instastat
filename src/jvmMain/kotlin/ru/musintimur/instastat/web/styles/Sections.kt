@@ -22,4 +22,7 @@ fun CSSBuilder.sections() {
     rule(".$CLS_COMMENTS_SECTION") {
         marginTop = LinearDimension("${topMargin}px")
     }
+    rule(".$CLS_AUTHENTICATE_SECTION") {
+        marginTop = LinearDimension("${topMargin}px")
+    }
 }

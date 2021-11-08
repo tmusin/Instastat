@@ -23,7 +23,14 @@ fun HEAD.bootstrapCss() {
 }
 
 fun HEAD.defMeta() {
-    meta { charset="utf-8" }
+    meta {
+        httpEquiv="content-type"
+        content="text/html; charset=utf-8"
+    }
+    meta {
+        content="utf-8"
+        httpEquiv="encoding"
+    }
     meta {
         name="viewport"
         content="width=device-width, initial-scale=1, shrink-to-fit=no"

@@ -9,9 +9,9 @@ import ru.musintimur.instastat.extensions.dropdownStyle
 
 fun DIV.customDropdown(sortMap: Map<String, String>, sortName: String) {
     div {
-        classes = setOf(CLS_BOOTSTRAP_DROPDOWN, CLS_BOOTSTRAP_CONTAINER,)
+        classes = setOf(CLS_BOOTSTRAP_DROPDOWN, CLS_ML_2)
         button {
-            classes = setOf(BUTTON_BOOTSTRAP, BUTTON_BOOTSTRAP_SECONDARY, CLS_BOOTSTRAP_DROPDOWN_TOGGLE)
+            classes = setOf(BUTTON_BOOTSTRAP, BUTTON_BOOTSTRAP_SECONDARY, CLS_BOOTSTRAP_DROPDOWN_TOGGLE, CLS_BOOTSTRAP_JUSTIFY_CONTENT_LEFT)
             type = ButtonType.button
             dropdownStyle()
             +sortName

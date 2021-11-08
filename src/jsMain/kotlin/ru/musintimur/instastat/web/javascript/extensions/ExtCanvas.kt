@@ -14,5 +14,5 @@ fun HTMLCanvasElement.collectParameters(): String {
     if (this.hasAttribute(ATTR_PROFILE_DATE2)) {
         params += "date2=${this.getAttribute(ATTR_PROFILE_DATE2)}&"
     }
-    return params.dropLast(1);
+    return params.dropLast(1)
 }

@@ -1,21 +1,36 @@
 package ru.musintimur.instastat.web.components
 
-import io.ktor.util.*
 import kotlinx.html.*
 import ru.musintimur.instastat.common.constants.NAVIGATION_BAR_MAIN
 import ru.musintimur.instastat.extensions.*
+import ru.musintimur.instastat.model.entities.UserGroups
+import ru.musintimur.instastat.model.entities.UserGroups.Companion.signedInUserGroups
+import ru.musintimur.instastat.web.auth.hash
 import ru.musintimur.instastat.web.pages.*
 
-val mainSections: Map<String, String> = mapOf(
-    MAIN_PAGE_NAME to MAIN_PAGE,
-    DICTIONARY_PAGE_NAME to DICTIONARY_PAGE,
-    POSTS_PAGE_NAME to POSTS_PAGE
+data class MainMenuEntry(
+    val entryCaption: String,
+    val href: String,
+    val predicate: (String) -> Boolean = { true }
 )
 
-val emptyMenu: Map<String, String> = emptyMap
+val mainSections: List<MainMenuEntry> = listOf(
+    MainMenuEntry(MAIN_PAGE_NAME, MAIN_PAGE),
+    MainMenuEntry(DICTIONARY_PAGE_NAME, DICTIONARY_PAGE
+    ) { hash ->
+        hash in setOf(
+            hash(UserGroups.ADMIN.toString()),
+            hash(UserGroups.OWNER.toString()))
+    },
+    MainMenuEntry(POSTS_PAGE_NAME, POSTS_PAGE),
+)
 
-@KtorExperimentalAPI
-fun HTML.pageTemplate(pageName: String, additionalScripts: (BODY.() -> Unit)? = null, pageContent: BODY.() -> Unit) {
+fun HTML.pageTemplate(
+    pageName: String,
+    userGroupHash: String,
+    additionalScripts: (BODY.() -> Unit)? = null,
+    pageContent: BODY.() -> Unit)
+{
     head {
         title("$SITE_NAME | $pageName")
 
@@ -25,8 +40,12 @@ fun HTML.pageTemplate(pageName: String, additionalScripts: (BODY.() -> Unit)? = 
         customCss()
     }
     body {
-        navigationBar(NAVIGATION_BAR_MAIN, mainSections)
-        pageContent()
+        if (userGroupHash in signedInUserGroups) {
+            navigationBar(NAVIGATION_BAR_MAIN, mainSections, userGroupHash)
+            pageContent()
+        } else {
+            authBlock()
+        }
         staticScripts()
         bootstrapJs()
         additionalScripts?.invoke(this)

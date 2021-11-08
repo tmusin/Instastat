@@ -1,7 +1,7 @@
 package ru.musintimur.instastat.model.entities
 
 data class Statistics(
-    var posts: Long,
-    var followers: Long,
-    var followings: Long
+    var posts: Int,
+    var followers: Int,
+    var followings: Int
 )

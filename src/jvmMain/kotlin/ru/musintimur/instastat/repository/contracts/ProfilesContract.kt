@@ -9,7 +9,7 @@ interface ProfilesContract {
     suspend fun getAllActiveProfilesForUpdate(): List<Profile>
     suspend fun getParserProgress(): Int
     suspend fun getProfileByName(profileName: String): Profile?
-    suspend fun setProfileActivity(profileId: Long, isActive: Boolean)
+    suspend fun setProfileActivity(profileId: Int, isActive: Boolean)
     suspend fun addProfile(profileName: String)
 
 }

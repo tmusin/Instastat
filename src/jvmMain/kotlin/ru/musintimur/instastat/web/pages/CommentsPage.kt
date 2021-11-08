@@ -4,13 +4,13 @@ import io.ktor.application.*
 import io.ktor.html.*
 import io.ktor.locations.*
 import io.ktor.routing.*
-import io.ktor.util.*
 import kotlinx.html.*
 import kotlinx.html.attributes.StringAttribute
 import ru.musintimur.instastat.common.constants.*
 import ru.musintimur.instastat.extensions.padZeros
 import ru.musintimur.instastat.parsers.getFullProfileUrl
 import ru.musintimur.instastat.repository.Repository
+import ru.musintimur.instastat.web.auth.readUserGroupHash
 import ru.musintimur.instastat.web.components.pageTemplate
 
 const val COMMENTS_PAGE = "comments"
@@ -26,14 +26,13 @@ data class CommentsPage(val postId: Int)
 @Location(COMMENTS_PAGE_PRINT)
 data class CommentsPrint(val postId: Int)
 
-@KtorExperimentalAPI
 @KtorExperimentalLocationsAPI
 fun Route.comments(db: Repository) {
     get<CommentsPage> { page ->
-        val post = db.posts.getPostById(page.postId.toLong())
+        val post = db.posts.getPostById(page.postId)
         val comments = post?.let { db.comments.getPostComments(it) } ?: emptyList()
         call.respondHtml {
-            pageTemplate(COMMENTS_PAGE_NAME) {
+            pageTemplate(COMMENTS_PAGE_NAME, readUserGroupHash(this@get)) {
                 div {
                     classes = setOf(CLS_COMMENTS_SECTION)
                     div {

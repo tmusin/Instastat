@@ -1,6 +1,5 @@
 package ru.musintimur.instastat.parsers
 
-import kotlinx.coroutines.delay
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import ru.musintimur.instastat.extensions.errorLog
@@ -50,7 +49,7 @@ fun doAuth() {
     }
 }
 
-suspend fun doLogout() {
+fun doLogout() {
     "\nВыходим из профиля...".log()
     val selDriver = Selenium.seleniumDriver
     val wait = Selenium.seleniumWait
